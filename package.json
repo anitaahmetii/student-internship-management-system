@@ -1,0 +1,26 @@
+{
+  "name": "student-internship-management-system",
+  "version": "1.0.0",
+  "description": "Backend API for managing student internships, applications, and company workflows using Node.js and Express.",
+  "homepage": "https://github.com/anitaahmetii/student-internship-management-system#readme",
+  "bugs": {
+    "url": "https://github.com/anitaahmetii/student-internship-management-system/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anitaahmetii/student-internship-management-system.git"
+  },
+  "license": "ISC",
+  "author": "Anita Ahmeti",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.5",
+    "nodemon": "^3.1.11"
+  }
+}
