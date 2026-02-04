@@ -18,7 +18,8 @@ const CVSchema = new mongoose.Schema({
         { 
             position: { type: String, uppercase: true }, 
             company: { type: String, uppercase: true }, 
-            startDate: { type: Date }, endDate: { type: Date }, 
+            startDate: { type: Date }, 
+            endDate: { type: Date }, 
             isCurrent: { type: Boolean, default: false }, 
             description: { type: String } 
         } 
