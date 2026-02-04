@@ -5,7 +5,7 @@ const add = async (roleName, permission) =>
     try
     {
         const findRole = await roleExists(roleName);
-        if (findRole) throw new Error(`Role already exists!`);
+        if (findRole.exists) throw new Error(`Role already exists!`);
 
         const role = new Role({ role: roleName, permission: permission });
         return await role.save();
@@ -18,7 +18,7 @@ const add = async (roleName, permission) =>
 const roleExists = async (roleName) =>
 {
     const findRole = await Role.findOne({ role: roleName });
-    return !!findRole;
+    return { exists: !!findRole, id: findRole?._id };
 }
 const get = async () => 
 {
@@ -31,7 +31,7 @@ const update = async (role, roleName, permission) =>
     try
     {
         const findRole = await roleExists(role);
-        if (!findRole) throw new Error(`Role not found!`);
+        if (!findRole.exists) throw new Error(`Role not found!`);
 
         const update = await Role.findOneAndUpdate( { role: role }, 
                                                     { role: roleName, permission: permission }, 
