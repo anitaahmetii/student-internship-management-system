@@ -73,4 +73,4 @@ const codeExists = async (codeName) =>
     return !!findCode;
 }
 
-module.exports = { add, get, update, toDelete };
+module.exports = { add, get, update, toDelete, stateExists };

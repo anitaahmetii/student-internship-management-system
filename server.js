@@ -3,11 +3,12 @@ const connectDB = require('./config/dbConnection');
 const app = express();
 const roleRoute = require('./routes/role.route');
 const stateRoute = require('./routes/state.route');
+const cityRoute = require('./routes/city.route');
 
 app.use(express.json());
 app.use('/api/role', roleRoute);
 app.use('/api/state', stateRoute);
-
+app.use('/api/city', cityRoute);
 
 
 const startRunning = async () => 

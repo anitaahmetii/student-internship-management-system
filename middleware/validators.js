@@ -59,5 +59,46 @@ const validateToUpdateState =
         .notEmpty().withMessage('Name cannot be empty if provided!'),
     extractError
 ];
+const validateCity = 
+[
+    body('name')
+        .exists().withMessage('Name must be provided!')
+        .bail()
+        .isString().withMessage('Name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Name cannot be empty!'),
+    body('state')
+        .exists().withMessage('State must be provided!')    
+        .bail()                    
+        .isString().withMessage('State must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('State cannot be empty!'),
+    extractError
+];
+const validateToUpdateCity =
+[
+    body('name')
+        .optional()                         
+        .isString().withMessage('Name must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Name cannot be empty if provided!'),
+    body('state')
+        .optional()                         
+        .isString().withMessage('State must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('State cannot be empty if provided!'),
+    extractError
+];
 
-module.exports = { validateRole, validateState, validateToUpdateState };
+module.exports = 
+{ 
+    validateRole, 
+    validateState, 
+    validateToUpdateState, 
+    validateCity,
+    validateToUpdateCity 
+};
