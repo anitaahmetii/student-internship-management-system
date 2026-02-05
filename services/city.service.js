@@ -1,15 +1,15 @@
 const City = require('../models/City');
 const stateService = require('./state.service');
 
-const add = async (cityName, state) => 
+const add = async (cityName, stateName) => 
 {
     try
     {
-        const { exists: stateName, id: stateId } = await stateService.stateExists(state);
-        if (!stateName) throw new Error('State not found!');
+        const { exists, id: stateId } = await stateService.stateExists(stateName);
+        if (!exists) throw new Error('State not found!');
 
-        const { cityExists, stateExists } = await cityAndStateExists(cityName);
-        if (cityExists && stateExists) throw new Error('A city within that state already exists.');
+        const existsInState  = await cityExistsInState(cityName, stateId);
+        if (existsInState ) throw new Error('A city within that state already exists.');
 
         const city = new City({ name: cityName, state: stateId });
         return await city.save();
@@ -25,22 +25,22 @@ const get = async () =>
    if (cities.length === 0) throw new Error("No cities found!");
    return cities;
 }
-const update = async (city, cityName, state) => 
+const update = async (city, cityName, stateName) => 
 {
     try
     {
-        let stateName, stateId;
-        if (state)
+        // let stateId;
+        if (stateName)
         {
-            ({ exists: stateName, id: stateId } = await stateService.stateExists(state));
-            if (!stateName) throw new Error('State not found!');
+            ({ exists, id: stateId } = await stateService.stateExists(stateName));
+            if (!exists) throw new Error('State not found!');
         }
 
-        const { cityExists, stateExists } = await cityAndStateExists(cityName);
-        if (cityExists && stateExists) throw new Error('A city within that state already exists.');
+        const existsInState  = await cityExistsInState(cityName, stateId);
+        if (existsInState ) throw new Error('A city within that state already exists.');
 
         const toUpdate = await City.findOneAndUpdate({ name: city },
-                                                    { name: cityName, state: stateId ?? state },
+                                                    { name: cityName, state: stateId },
                                                     { new: true, runValidators: true });
         return toUpdate;
     }
@@ -67,11 +67,10 @@ const toDelete = async (city, state) =>
         throw new Error(`Database error while deleting city: ${err.message}`);
     }
 }
-const cityAndStateExists = async (city) =>
+const cityExistsInState = async (cityName, stateId) => 
 {
-    const findCity = await City.findOne({ name: city });
-    return { cityExists: !!findCity, id: findCity?._id, stateExists: !!findCity?.state };
-}
+    return await City.exists({ name: cityName, state: stateId });
+};
 const findCityState = async (state) => 
 {
     try
@@ -110,4 +109,4 @@ const findCity = async(cityName) =>
 {
     return await City.exists({ name: cityName });
 }
-module.exports = { add, cityAndStateExists, get, update, toDelete, findCityState, findStateCity };
+module.exports = { add, get, update, toDelete, findCityState, findStateCity };
