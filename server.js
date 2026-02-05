@@ -2,9 +2,13 @@ const express = require('express');
 const connectDB = require('./config/dbConnection');
 const app = express();
 const roleRoute = require('./routes/role.route');
+const stateRoute = require('./routes/state.route');
 
 app.use(express.json());
 app.use('/api/role', roleRoute);
+app.use('/api/state', stateRoute);
+
+
 
 const startRunning = async () => 
 {

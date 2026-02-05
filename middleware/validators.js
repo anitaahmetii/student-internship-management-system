@@ -17,12 +17,47 @@ const validateRole =
         .trim()
         .notEmpty().withMessage('Role cannot be empty!'),
     body('permission')
-        .optional()                          // 1️⃣ kontrollo opsionalitetin së pari
-        .isString().withMessage('Permission must be a string!')  // 2️⃣ vetëm nëse ekziston
+        .optional()                         
+        .isString().withMessage('Permission must be a string!') 
         .bail()
         .trim()                               
         .notEmpty().withMessage('Permission cannot be empty if provided!'),
     extractError
 ];
 
-module.exports = { validateRole };
+const validateState = 
+[
+    body('name')
+        .exists().withMessage('Name must be provided!')
+        .bail()
+        .isString().withMessage('Name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Name cannot be empty!'),
+    body('code')
+        .exists().withMessage('Code must be provided!')    
+        .bail()                    
+        .isString().withMessage('Code must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Code cannot be empty!'),
+    extractError
+];
+const validateToUpdateState = 
+[
+    body('name')
+        .optional()                         
+        .isString().withMessage('Name must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Name cannot be empty if provided!'),
+    body('code')
+        .optional()                         
+        .isString().withMessage('Name must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Name cannot be empty if provided!'),
+    extractError
+];
+
+module.exports = { validateRole, validateState, validateToUpdateState };
