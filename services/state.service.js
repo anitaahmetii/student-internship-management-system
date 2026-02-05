@@ -4,8 +4,8 @@ const add = async (name, code) =>
 {
     try
     {
-        const findState = await stateExists(name);
-        if (findState) throw new Error(`State already exists!`);
+        const { exists } = await stateExists(name);
+        if (exists) throw new Error(`State already exists!`);
 
         const findCode = await codeExists(code);
         if (findCode) throw new Error(`Code already exists!`);
@@ -28,11 +28,11 @@ const update = async (state, stateName, code) =>
 {
     try
     {
-        const findState = await stateExists(state);
-        if (!findState) throw new Error(`State not found!`);
+        const { exists } = await stateExists(state);
+        if (!exists) throw new Error(`State not found!`);
 
         const findStateName = await stateExists(stateName);
-        if (findStateName) throw new Error(`State already exists!`);
+        if (findStateName.exists) throw new Error(`State already exists!`);
 
         const findCode = await codeExists(code);
         if (findCode) throw new Error(`Code already exists!`);
@@ -51,8 +51,8 @@ const toDelete = async (state) =>
 {
     try
     {
-        const findState = await stateExists(state);
-        if (!findState) throw new Error(`State not found!`);
+        const { exists } = await stateExists(state);
+        if (!exists) throw new Error(`State not found!`);
 
         const deleteState = await State.findOneAndDelete({ name: state });
         return deleteState;
@@ -65,7 +65,7 @@ const toDelete = async (state) =>
 const stateExists = async (stateName) =>
 {
     const findState = await State.findOne({ name: stateName });
-    return !!findState;
+    return { exists: !!findState, id: findState?._id };
 }
 const codeExists = async (codeName) =>
 {
