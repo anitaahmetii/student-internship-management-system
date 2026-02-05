@@ -72,5 +72,42 @@ const cityAndStateExists = async (city) =>
     const findCity = await City.findOne({ name: city });
     return { cityExists: !!findCity, id: findCity?._id, stateExists: !!findCity?.state };
 }
+const findCityState = async (state) => 
+{
+    try
+    {
+        const { exists, id: stateId } = await stateService.stateExists(state);
+        if (!exists) throw new Error("State not found!");
 
-module.exports = { add, cityAndStateExists, get, update, toDelete };
+        const cities = await City.find({ state: stateId })
+                                 .populate({ path: 'state', select: 'name -_id'})
+                                 .lean();
+        return cities;
+
+    }
+    catch(err)
+    {
+        throw new Error(`An error occurred while filtering cities by state: ${err.message}`);
+    }
+}
+const findStateCity = async (city) =>
+{
+    try
+    {
+        const cityExists = await findCity(city);
+        if (!cityExists) throw new Error("No city found!");
+
+        const cityState = await City.find({ name: city }).populate({ path: 'state', select: 'name -_id'});
+        
+        return cityState.map(c => ({ city: c.name, state: c.state }));
+    }
+    catch(err)
+    {
+        throw new Error(`An error occurred while filtering state by city: ${err.message}`);
+    }
+}
+const findCity = async(cityName) => 
+{
+    return await City.exists({ name: cityName });
+}
+module.exports = { add, cityAndStateExists, get, update, toDelete, findCityState, findStateCity };
