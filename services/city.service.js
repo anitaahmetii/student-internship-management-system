@@ -104,8 +104,8 @@ const findStateCity = async (city) =>
 {
     try
     {
-        const cityExists = await findCity(city);
-        if (!cityExists) throw new Error("No city found!");
+        const { exists } = await findCity(city);
+        if (!exists) throw new Error("No city found!");
 
         const cityState = await City.find({ name: city }).populate({ path: 'state', select: 'name -_id'});
         
@@ -118,7 +118,8 @@ const findStateCity = async (city) =>
 }
 const findCity = async(cityName) => 
 {
-    return await City.exists({ name: cityName });
+    const city = await City.findOne({ name: cityName });
+    return { exists: !!city, cityId: city?._id}
 }
 
-module.exports = { add, get, update, toDelete, findCityState, findStateCity };
+module.exports = { add, get, update, toDelete, findCityState, findStateCity, findCity };
