@@ -31,10 +31,10 @@ const updateCity = async (req, res) =>
 {
     try 
     {
-        const { city } = req.params;
-        const { name, state } = req.body;
+        const { city, state } = req.params;
+        const { name: cityName, state: stateName } = req.body;
 
-        const updatedCity = await cityService.update(city, name, state);
+        const updatedCity = await cityService.update(city, state, cityName, stateName);
         return res.status(200).json(updatedCity);
     }
     catch(err)
