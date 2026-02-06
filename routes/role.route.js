@@ -5,7 +5,7 @@ const validator = require('../middleware/validators');
 
 route.post('/add', validator.validateRole, roleController.createRole);
 route.get('/', roleController.getRoles);
-route.put('/update/:role', validator.validateRole, roleController.updateRole);
+route.put('/update/:role', validator.validateToUpdateRole, roleController.updateRole);
 route.delete('/:role', roleController.deleteRole);
 
 module.exports = route;

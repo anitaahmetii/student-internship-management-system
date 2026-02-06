@@ -24,7 +24,22 @@ const validateRole =
         .notEmpty().withMessage('Permission cannot be empty if provided!'),
     extractError
 ];
-
+const validateToUpdateRole = 
+[
+    body('role')
+        .optional()                         
+        .isString().withMessage('Role must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Role cannot be empty if provided!'),
+    body('permission')
+        .optional()                         
+        .isString().withMessage('Permission must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Permission cannot be empty if provided!'),
+    extractError
+];
 const validateState = 
 [
     body('name')
@@ -97,6 +112,7 @@ const validateToUpdateCity =
 module.exports = 
 { 
     validateRole, 
+    validateToUpdateRole,
     validateState, 
     validateToUpdateState, 
     validateCity,
