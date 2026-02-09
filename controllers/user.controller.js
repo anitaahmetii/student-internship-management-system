@@ -20,7 +20,8 @@ const loginUser = async (req, res) =>
     {
         const { email, password } = req.body;
         const loginUser = await userService.login(email, password);
-        return res.status(200).json(loginUser);
+        // console.log(loginUser);
+        return res.status(200).json({ accessToken: loginUser });
     }
     catch(err)
     {
@@ -28,4 +29,17 @@ const loginUser = async (req, res) =>
         console.log(err.message);
     }
 }
-module.exports = { registerUser, loginUser };
+const getUsers = async (req, res) =>
+{
+    try
+    {
+        const users = await userService.getAll();
+        return res.status(200).json(users);
+    }
+     catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
+module.exports = { registerUser, loginUser, getUsers };

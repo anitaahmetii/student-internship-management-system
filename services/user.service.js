@@ -14,6 +14,7 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
 
         const { exists: roleAvailable, id: roleId } = await roleService.roleExists(role);
         if (!roleAvailable) throw new Error('Role not available!');
+        //me kontrollu nese eshte roli admin mos me leju me insertu sepse nuk ka permission
 
         const emailExists = await checkEmail(email);
         if (emailExists) throw new Error("Email already exists!");
@@ -48,20 +49,34 @@ const login = async (email, password) =>
         if (!verifyPassword) throw new Error("Password does not match");
         
         const userLoggedIn = await token.generateToken(user);
-        return { userLoggedIn, 
-                user: 
-                {
-                    id: user._id,
-                    name: user.name,
-                    surname: user.surname,
-                    email: user.email,
-                    role: user.role
-                }
-            };
+        return userLoggedIn;
     }
     catch(err)
     {
         throw new Error(`Database error while logging user: ${err.message}`);
+    }
+}
+const getAll = async () => 
+{
+    try 
+    {
+        const users = await User.find({})
+                                .populate({ path: 'city', select: 'name -_id'})
+                                .populate({ path: 'role', select: 'role -_id'}).lean();
+        return users.map(u => ({ _id: u._id,
+                                name: u.name,
+                                surname: u.surname,
+                                email: u.email,
+                                birthDate: u.birthDate,
+                                phoneNumber: u.phoneNumber,
+                                city: u.city,
+                                visibility: u.isVisible,
+                                role: u.role
+        }));
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retriving users: ${err.message}`);
     }
 }
 const checkEmail = async (email) =>
@@ -86,7 +101,9 @@ const checkPassword = async (loginPassword, hashedPassword) =>
 }
 const checkUser = async (email) =>
 {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email })
+                            .populate({ path: 'city', select: 'name -_id'})
+                            .populate({ path: 'role', select: 'role -_id'}).lean();;
     return user;
 }
-module.exports = { register, login };
+module.exports = { register, login, getAll };
