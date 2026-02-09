@@ -7,5 +7,6 @@ const auth = require('../middleware/auth');
 route.post('/register', validator.validateToRegisterUser, userController.registerUser);
 route.post('/login', validator.validateToLoginUser, userController.loginUser);
 route.get('/', auth.verifyToken(['admin']), userController.getUsers);
+route.post('/refresh', auth.verifyToken(['admin']), userController.refreshToken);
 
 module.exports = route;

@@ -3,7 +3,7 @@ const User = require('../models/User');
 const roleService = require('./role.service');
 const cityService = require('./city.service');
 const bcrypt = require('bcrypt');
-const token = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
 
 const register = async (name, surname, email, birthDate, phoneNumber, city, password, role) => 
 {
@@ -38,6 +38,22 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
         throw new Error(`Database error while registering user: ${err.message}`);
     }
 }
+const generateTokens = async (user) => 
+{
+    const payload = 
+    {
+        _id: user._id,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        role: user.role.role
+    }
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2d'});
+    // const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    // console.log(decode);
+    return { accessToken, refreshToken };
+}
 const login = async (email, password) =>
 {
     try
@@ -48,12 +64,26 @@ const login = async (email, password) =>
         const verifyPassword = await checkPassword(password, user.password);
         if (!verifyPassword) throw new Error("Password does not match");
         
-        const userLoggedIn = await token.generateToken(user);
-        return userLoggedIn;
+        const { accessToken: userAccessToken, refreshToken: userRefreshToken } = await generateTokens(user);
+        
+        return { userAccessToken, userRefreshToken };
     }
     catch(err)
     {
         throw new Error(`Database error while logging user: ${err.message}`);
+    }
+}
+const refresh = async (refreshToken) => 
+{
+    try
+    {
+        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const user = await getUserByIdAndRole(payload._id);
+        if (!user) throw new Error('User not found');
+        return generateTokens(user);
+    }
+    catch (err) {
+        throw new Error(`Invalid refresh token: ${err.message}`);
     }
 }
 const getAll = async () => 
@@ -103,7 +133,13 @@ const checkUser = async (email) =>
 {
     const user = await User.findOne({ email: email })
                             .populate({ path: 'city', select: 'name -_id'})
-                            .populate({ path: 'role', select: 'role -_id'}).lean();;
+                            .populate({ path: 'role', select: 'role -_id'}).lean();
     return user;
 }
-module.exports = { register, login, getAll };
+const getUserByIdAndRole = async (id) =>
+{
+    const user = await User.findById({ _id: id })
+                           .populate({ path: 'role', select: 'role -_id'}).lean();
+    return user;
+}
+module.exports = { register, login, getAll, refresh };

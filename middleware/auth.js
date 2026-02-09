@@ -1,22 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-const generateToken = async (user) => 
-{
-    const payload = 
-    {
-        _id: user._id,
-        name: user.name,
-        surname: user.surname,
-        email: user.email,
-        role: user.role.role
-    }
-    //{ expiresIn: '15s' }
-    const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
-    // const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    // console.log(decode);
-    return token;
-}
 const verifyToken = (allowedRoles = []) => 
 {
     return (req, res, next) => 
@@ -33,7 +17,7 @@ const verifyToken = (allowedRoles = []) =>
 
             if (allowedRoles.length && !allowedRoles.includes(req.user.role))
             {
-                return res.status(403).json({ error: 'Insufficient permissions' })
+                return res.status(403).json({ error: 'Insufficient permissions' });
             }
             next();
         }
@@ -43,4 +27,4 @@ const verifyToken = (allowedRoles = []) =>
         }   
     }
 }
-module.exports = { generateToken, verifyToken };
+module.exports = { verifyToken };

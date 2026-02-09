@@ -19,9 +19,9 @@ const loginUser = async (req, res) =>
     try
     {
         const { email, password } = req.body;
-        const loginUser = await userService.login(email, password);
+        const { userAccessToken, userRefreshToken } = await userService.login(email, password);
         // console.log(loginUser);
-        return res.status(200).json({ accessToken: loginUser });
+        return res.status(200).json({ accessToken: userAccessToken, refreshToken: userRefreshToken });
     }
     catch(err)
     {
@@ -36,10 +36,24 @@ const getUsers = async (req, res) =>
         const users = await userService.getAll();
         return res.status(200).json(users);
     }
-     catch(err)
+    catch(err)
     {
         res.status(409).json(err.message);
         console.log(err.message);
     }
 }
-module.exports = { registerUser, loginUser, getUsers };
+const refreshToken = async (req, res) =>
+{
+    try 
+    {
+        const { refreshToken } = req.body;
+        const refresh = await userService.refresh(refreshToken);
+        res.json(refresh);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
+module.exports = { registerUser, loginUser, getUsers, refreshToken };
