@@ -139,7 +139,23 @@ const checkUser = async (email) =>
 const getUserByIdAndRole = async (id) =>
 {
     const user = await User.findById({ _id: id })
+                           .select('-password')
                            .populate({ path: 'role', select: 'role -_id'}).lean();
     return user;
 }
-module.exports = { register, login, getAll, refresh };
+const current = async (token) =>
+{
+    try 
+    {
+        const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const userId = verifyToken._id;
+        const currentUser = await User.findById({ _id: userId }).select('-password');
+        return currentUser;
+    }
+    catch(err)
+    {
+        throw new Error(`Failed to get current user: ${err.message}`);
+    }
+}
+
+module.exports = { register, login, getAll, refresh, current };

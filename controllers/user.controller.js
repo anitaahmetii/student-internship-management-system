@@ -56,4 +56,19 @@ const refreshToken = async (req, res) =>
         console.log(err.message);
     }
 }
-module.exports = { registerUser, loginUser, getUsers, refreshToken };
+const getCurrentUser = async (req, res) =>
+{
+    try
+    {
+        const header = req.headers.authorization;
+        const token = header && header.split(' ')[1];
+        const currentUser = await userService.current(token);
+        res.json(currentUser);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
+module.exports = { registerUser, loginUser, getUsers, refreshToken, getCurrentUser };

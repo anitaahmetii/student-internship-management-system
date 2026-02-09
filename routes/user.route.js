@@ -8,5 +8,6 @@ route.post('/register', validator.validateToRegisterUser, userController.registe
 route.post('/login', validator.validateToLoginUser, userController.loginUser);
 route.get('/', auth.verifyToken(['admin']), userController.getUsers);
 route.post('/refresh', auth.verifyToken(['admin']), userController.refreshToken);
+route.get('/current', userController.getCurrentUser);
 
 module.exports = route;
