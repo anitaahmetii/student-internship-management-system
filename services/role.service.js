@@ -59,4 +59,4 @@ const toDelete = async (roleName) =>
     }
 }
 
-module.exports = { add, get, update, toDelete };
+module.exports = { add, get, update, toDelete, roleExists };

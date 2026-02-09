@@ -108,7 +108,71 @@ const validateToUpdateCity =
         .notEmpty().withMessage('State cannot be empty if provided!'),
     extractError
 ];
-
+const validateUser = 
+[
+    body('name')
+        .exists().withMessage('Name must be provided!')
+        .bail()
+        .isString().withMessage('Name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Name cannot be empty!'),
+    body('surname')
+        .exists().withMessage('Surname must be provided!')    
+        .bail()                    
+        .isString().withMessage('Surname must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Surname cannot be empty!'),
+    body('email')
+        .exists().withMessage('Email must be provided!')
+        .bail()
+        .isString().withMessage('Email must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Email cannot be empty!'),
+    body('birthDate')
+        .exists().withMessage('Birthdate must be provided!')    
+        .bail()                    
+        .isDate().withMessage('Birthdate must be a date!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Birthdate cannot be empty!'),
+    body('phoneNumber')
+        .optional()                         
+        .isString().withMessage('Phone number must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Phone number cannot be empty if provided!'),
+    body('city')
+        .exists().withMessage('City must be provided!')    
+        .bail()                    
+        .isString().withMessage('City must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('City cannot be empty!'),
+    body('password')
+        .exists().withMessage('Password must be provided!')    
+        .bail()                    
+        .isString().withMessage('Password must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Password cannot be empty!'),
+    body('isVisible')
+        .optional()                         
+        .isBoolean().withMessage('Visibility must be boolean!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Visibility cannot be empty if provided!'),
+    body('role')
+        .exists().withMessage('Role must be provided!')    
+        .bail()                    
+        .isString().withMessage('Role must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Role cannot be empty!'),
+    extractError
+];
 module.exports = 
 { 
     validateRole, 
@@ -116,5 +180,6 @@ module.exports =
     validateState, 
     validateToUpdateState, 
     validateCity,
-    validateToUpdateCity 
+    validateToUpdateCity,
+    validateUser
 };
