@@ -1,7 +1,9 @@
+require('dotenv').config();
 const User = require('../models/User');
 const roleService = require('./role.service');
 const cityService = require('./city.service');
 const bcrypt = require('bcrypt');
+const token = require('../middleware/auth');
 
 const register = async (name, surname, email, birthDate, phoneNumber, city, password, role) => 
 {
@@ -32,7 +34,34 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
     }
     catch(err)
     {
-        throw new Error(`Database error while while registering user: ${err.message}`);
+        throw new Error(`Database error while registering user: ${err.message}`);
+    }
+}
+const login = async (email, password) =>
+{
+    try
+    {
+        const user = await checkUser(email);
+        if (!user) throw new Error("User does not exist!");
+
+        const verifyPassword = await checkPassword(password, user.password);
+        if (!verifyPassword) throw new Error("Password does not match");
+        
+        const userLoggedIn = await token.generateToken(user);
+        return { userLoggedIn, 
+                user: 
+                {
+                    id: user._id,
+                    name: user.name,
+                    surname: user.surname,
+                    email: user.email,
+                    role: user.role
+                }
+            };
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while logging user: ${err.message}`);
     }
 }
 const checkEmail = async (email) =>
@@ -50,4 +79,14 @@ const hashPassword = async (password) =>
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
 }
-module.exports = { register };
+const checkPassword = async (loginPassword, hashedPassword) => 
+{
+    const exists = await bcrypt.compare(loginPassword, hashedPassword);
+    return !!exists;
+}
+const checkUser = async (email) =>
+{
+    const user = await User.findOne({ email: email });
+    return user;
+}
+module.exports = { register, login };

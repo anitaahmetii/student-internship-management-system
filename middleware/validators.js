@@ -108,7 +108,7 @@ const validateToUpdateCity =
         .notEmpty().withMessage('State cannot be empty if provided!'),
     extractError
 ];
-const validateUser = 
+const validateToRegisterUser = 
 [
     body('name')
         .exists().withMessage('Name must be provided!')
@@ -173,6 +173,25 @@ const validateUser =
         .notEmpty().withMessage('Role cannot be empty!'),
     extractError
 ];
+const validateToLoginUser =
+[
+    body('email')
+        .exists().withMessage('Email must be provided!')
+        .bail()
+        .isString().withMessage('Email must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Email cannot be empty!'),
+    body('password')
+        .exists().withMessage('Password must be provided!')    
+        .bail()                    
+        .isString().withMessage('Password must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Password cannot be empty!'),
+    extractError
+];
+
 module.exports = 
 { 
     validateRole, 
@@ -181,5 +200,6 @@ module.exports =
     validateToUpdateState, 
     validateCity,
     validateToUpdateCity,
-    validateUser
+    validateToRegisterUser,
+    validateToLoginUser
 };
