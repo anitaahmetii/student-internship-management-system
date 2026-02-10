@@ -191,7 +191,64 @@ const validateToLoginUser =
         .notEmpty().withMessage('Password cannot be empty!'),
     extractError
 ];
-
+const validateToUpdateUser = 
+[
+    body('name')
+        .optional()                         
+        .isString().withMessage('Name must be string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Name cannot be empty if provided!'),
+    body('surname')
+        .optional()                         
+        .isString().withMessage('Surname must be string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Surname cannot be empty if provided!'),
+    body('email')
+        .optional()                         
+        .isString().withMessage('Email must be string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Email cannot be empty if provided!'),
+    body('birthDate')
+        .optional()                         
+        .isDate().withMessage('Birthdate must be date!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Birthdate cannot be empty if provided!'),
+    body('phoneNumber')
+        .optional()                         
+        .isString().withMessage('Phone number must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Phone number cannot be empty if provided!'),
+    body('city')
+        .optional()                         
+        .isString().withMessage('City must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('City cannot be empty if provided!'),
+    body('password')
+        .optional()                         
+        .isString().withMessage('Password must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Password cannot be empty if provided!'),
+    body('isVisible')
+        .optional()                         
+        .isBoolean().withMessage('Visibility must be boolean!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Visibility cannot be empty if provided!'),
+    body('role')
+        .optional()                         
+        .isString().withMessage('Role must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Role cannot be empty if provided!'),
+    extractError
+];
 module.exports = 
 { 
     validateRole, 
@@ -201,5 +258,6 @@ module.exports =
     validateCity,
     validateToUpdateCity,
     validateToRegisterUser,
-    validateToLoginUser
+    validateToLoginUser,
+    validateToUpdateUser
 };

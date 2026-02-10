@@ -1,18 +1,14 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-const verifyHeader = (header) =>
-{
-    const token = header && header.split(' ')[1];
-    return token;
-}
-
 const verifyToken = (allowedRoles = []) => 
 {
     return (req, res, next) => 
     {
 
-        const token = verifyHeader(req.headers.authorization);
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
         if (!token) return res.status(401).json({ error: 'Access denied' });
 
         try
@@ -32,4 +28,4 @@ const verifyToken = (allowedRoles = []) =>
         }   
     }
 }
-module.exports = { verifyToken, verifyHeader };
+module.exports = { verifyToken };

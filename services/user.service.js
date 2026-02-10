@@ -157,5 +157,86 @@ const current = async (token) =>
         throw new Error(`Failed to get current user: ${err.message}`);
     }
 }
+const toDelete = async (id) => 
+{
+    try
+    {
+        const deleteUser = await User.findByIdAndDelete({ _id: id });
+        return deleteUser;
+    }
+    catch(err)
+    {
+        throw new Error(`Failed to delete user: ${err.message}`);
+    }  
+}
+const findById = async (id) => 
+{c
+    const exists = await User.findOne({ _id: id });
+    return !!exists;
+}
+const toUpdate = async (emailParam, name, surname, email, birthDate, phoneNumber, city, password, role) => 
+{
+    try
+    {
+        const userExists = await checkEmail(emailParam);
+        if (!userExists) throw new Error("User does not exist!");
 
-module.exports = { register, login, getAll, refresh, current };
+        let cityAvailable, cityID;
+        if (city)
+        {
+            ({ exists: cityAvailable, cityId: cityID } = await cityService.findCity(city));
+            if (!cityAvailable) throw new Error("City not available!");
+        }
+
+        let roleAvailable, roleID;
+        if (role)
+        {
+            ({ exists: roleAvailable, id: roleID } = await roleService.roleExists(role));
+            if (!roleAvailable) throw new Error('Role not available!');
+        }
+        
+        if (email)
+        {
+            const emailExists = await checkEmail(email);
+            if (emailExists) throw new Error("Email already exists!");
+        }
+
+        if (phoneNumber)
+        {
+            const phoneNumberExists = await checkPhoneNumber(phoneNumber);
+            if (phoneNumberExists) throw new Error("Phone number already exists!");
+        }
+        
+        let hashedPassword;
+        if (password)
+        {
+            hashedPassword = await hashPassword(password);
+        }
+
+        const updatedUser = await User.findOneAndUpdate({ email: emailParam }, 
+                                                          { name: name, 
+                                                            surname: surname,
+                                                            email: email, 
+                                                            birthDate: birthDate,
+                                                            phoneNumber: phoneNumber,
+                                                            city: cityID,
+                                                            password: hashedPassword, 
+                                                            role: roleID },
+                                                          { new: true, runValidators: true });
+        return updatedUser;
+    }
+    catch(err)
+    {
+        throw new Error(`Failed to update user: ${err.message}`);
+    }  
+}
+module.exports = 
+{ 
+    register, 
+    login, 
+    getAll, 
+    refresh, 
+    current,
+    toDelete,
+    toUpdate
+};

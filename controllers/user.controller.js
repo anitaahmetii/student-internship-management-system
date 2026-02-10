@@ -71,4 +71,43 @@ const getCurrentUser = async (req, res) =>
         console.log(err.message);
     }
 }
-module.exports = { registerUser, loginUser, getUsers, refreshToken, getCurrentUser };
+const deleteUser = async (req, res) =>
+{
+    try 
+    {
+        const { id } = req.params;
+        const deletedUser = await userService.toDelete(id);
+        res.json({ message: 'Successfully deleted', user: deletedUser });
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
+const updateUser = async (req, res) =>
+{
+    try 
+    {
+        const { email: emailParam } = req.params;
+        const { name, surname, email, birthDate, phoneNumber, city, password, role } = req.body;
+        
+        const updatedUser = await userService.toUpdate(emailParam, name, surname, email, birthDate, phoneNumber, city, password, role);
+        return res.status(200).json(updatedUser);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
+module.exports = 
+{ 
+    registerUser, 
+    loginUser, 
+    getUsers, 
+    refreshToken, 
+    getCurrentUser,
+    deleteUser,
+    updateUser
+};

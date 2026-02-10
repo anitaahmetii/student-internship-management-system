@@ -9,5 +9,7 @@ route.post('/login', validator.validateToLoginUser, userController.loginUser);
 route.get('/', auth.verifyToken(['admin']), userController.getUsers);
 route.post('/refresh', auth.verifyToken(['admin']), userController.refreshToken);
 route.get('/current', userController.getCurrentUser);
+route.delete('/delete/:id', auth.verifyToken(['admin']), userController.deleteUser);
+route.put('/update/:email', auth.verifyToken(['admin']), validator.validateToUpdateUser, userController.updateUser);
 
 module.exports = route;
