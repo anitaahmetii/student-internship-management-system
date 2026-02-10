@@ -36,7 +36,7 @@ const getAll = async () =>
     }
     catch(err)
     {
-        throw new Error(`Database error while retriving internships: ${err.message}`);
+        throw new Error(`Database error while retrieving internships: ${err.message}`);
     }
 }
 const getById = async (internshipId) => 
@@ -92,10 +92,48 @@ const toDelete = async (internshipId) =>
         throw new Error(`Database error while deleting internships: ${err.message}`);
     }
 }
+const active = async () => 
+{
+    try
+    {
+        const activeInternships = await Internship.find({ applicationDeadline: { $gte: Date.now() }})
+                                                  .select('-isVisible -createdAt -updatedAt -__v')
+                                                  .populate({ path: 'location', select: 'name -_id' })
+                                                  .populate({ path: 'uploadedBy', select: 'email -_id' })
+                                                  .populate({ path: 'updatedBy', select: 'email -_id' })
+                                                  .lean();
+        if (activeInternships.length === 0) throw new Error("No internships available!");                                          
+        return activeInternships;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving active internships: ${err.message}`);
+    }
+}
+const inActive = async () => 
+{
+    try
+    {
+        const inActiveInternships = await Internship.find({ applicationDeadline: { $lt: Date.now() }})
+                                                  .select('-isVisible -createdAt -updatedAt -__v')
+                                                  .populate({ path: 'location', select: 'name -_id' })
+                                                  .populate({ path: 'uploadedBy', select: 'email -_id' })
+                                                  .populate({ path: 'updatedBy', select: 'email -_id' })
+                                                  .lean();
+        if (inActiveInternships.length === 0) throw new Error("No internships available!");                                          
+        return inActiveInternships;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving not active internships: ${err.message}`);
+    }
+}
 module.exports = 
 {
     register,
     getAll,
     toUpdate,
-    toDelete
+    toDelete,
+    active,
+    inActive
 }

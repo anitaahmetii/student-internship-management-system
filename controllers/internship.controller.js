@@ -79,10 +79,38 @@ const deleteInternship = async (req, res) =>
         console.log(err.message);
     }
 }
+const getActiveInternships = async (req, res) =>
+{
+    try
+    {
+        const internships = await internshipService.active();
+        res.status(200).json(internships);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
+const getInActiveInternships = async (req, res) =>
+{
+    try
+    {
+        const internships = await internshipService.inActive();
+        res.status(200).json(internships);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports =
 {
     uploadInternship,
     getInternships,
     updateInternship,
-    deleteInternship
+    deleteInternship,
+    getActiveInternships,
+    getInActiveInternships
 }

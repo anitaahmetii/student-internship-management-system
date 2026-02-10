@@ -8,5 +8,7 @@ route.post('/upload', auth.verifyToken(['admin', 'hr']), validator.validateToUpl
 route.get('/', internshipController.getInternships);
 route.put('/update/:internship', auth.verifyToken(['admin', 'hr']), validator.validateToUpdateInternship, internshipController.updateInternship);
 route.delete('/delete/:internship', auth.verifyToken(['admin', 'hr']), internshipController.deleteInternship);
+route.get('/activeInternships', internshipController.getActiveInternships);
+route.get('/inActiveInternships', auth.verifyToken(['admin', 'hr']), internshipController.getInActiveInternships);
 
 module.exports = route;
