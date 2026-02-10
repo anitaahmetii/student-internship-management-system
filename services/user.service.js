@@ -14,7 +14,10 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
 
         const { exists: roleAvailable, id: roleId } = await roleService.roleExists(role);
         if (!roleAvailable) throw new Error('Role not available!');
-        //me kontrollu nese eshte roli admin mos me leju me insertu sepse nuk ka permission
+        if (role.toLowerCase() === 'admin') 
+        {
+            throw new Error(`You do not have permission to assign the ${role} role.`);
+        }
 
         const emailExists = await checkEmail(email);
         if (emailExists) throw new Error("Email already exists!");
