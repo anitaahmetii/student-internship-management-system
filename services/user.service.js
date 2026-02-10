@@ -115,7 +115,7 @@ const getAll = async () =>
 const checkEmail = async (email) =>
 {
     const exists = await User.findOne({ email: email });
-    return !!exists;
+    return { exists: !!exists, userId: exists?.email };
 }
 const checkPhoneNumber = async (phoneNumber) =>
 {
@@ -172,16 +172,16 @@ const toDelete = async (id) =>
         throw new Error(`Failed to delete user: ${err.message}`);
     }  
 }
-const findById = async (id) => 
-{c
-    const exists = await User.findOne({ _id: id });
-    return !!exists;
-}
+// const findById = async (id) => 
+// {
+//     const exists = await User.findOne({ _id: id });
+//     return !!exists;
+// }
 const toUpdate = async (emailParam, name, surname, email, birthDate, phoneNumber, city, password, role) => 
 {
     try
     {
-        const userExists = await checkEmail(emailParam);
+        const { exists: userExists } = await checkEmail(emailParam);
         if (!userExists) throw new Error("User does not exist!");
 
         let cityAvailable, cityID;
@@ -200,7 +200,7 @@ const toUpdate = async (emailParam, name, surname, email, birthDate, phoneNumber
         
         if (email)
         {
-            const emailExists = await checkEmail(email);
+            const { exists: emailExists } = await checkEmail(email);
             if (emailExists) throw new Error("Email already exists!");
         }
 
@@ -241,5 +241,6 @@ module.exports =
     refresh, 
     current,
     toDelete,
-    toUpdate
+    toUpdate,
+    checkEmail
 };
