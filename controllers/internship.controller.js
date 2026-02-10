@@ -121,6 +121,20 @@ const getHRInternships = async (req, res) =>
         console.log(err.message);
     }
 }
+const getInternshipsByCity = async (req, res) =>
+{
+    try
+    {
+        const { city } = req.params;
+        const internships = await internshipService.byCity(city);
+        res.status(200).json(internships);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports =
 {
     uploadInternship,
@@ -129,5 +143,6 @@ module.exports =
     deleteInternship,
     getActiveInternships,
     getInActiveInternships,
-    getHRInternships
+    getHRInternships,
+    getInternshipsByCity
 }

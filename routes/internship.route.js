@@ -11,5 +11,6 @@ route.delete('/delete/:internship', auth.verifyToken(['admin', 'hr']), internshi
 route.get('/activeInternships', internshipController.getActiveInternships);
 route.get('/inActiveInternships', auth.verifyToken(['admin', 'hr']), internshipController.getInActiveInternships);
 route.get('/hrInternships', auth.verifyToken(['admin', 'hr']), internshipController.getHRInternships);
+route.get('/byCity/:city', internshipController.getInternshipsByCity);
 
 module.exports = route;

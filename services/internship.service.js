@@ -148,6 +148,27 @@ const myInternships = async (token) =>
         throw new Error(`Database error while retrieving your internships: ${err.message}`);
     }
 }
+const byCity = async (city) => 
+{
+    try
+    {
+        const { exists: cityAvailable, cityId } = await cityService.findCity(city);
+        if (!cityAvailable) throw new Error("City not found");
+
+        const internshipsByCity = await Internship.find({ location: cityId })
+                                                  .select('-isVisible -createdAt -updatedAt -__v')    
+                                                  .populate({ path: 'location', select: 'name -_id' })
+                                                  .populate({ path: 'uploadedBy', select: 'email -_id' })
+                                                  .populate({ path: 'updatedBy', select: 'email -_id' })
+                                                  .lean();
+        if (internshipsByCity.length === 0) return "No internship found in this city!";
+        return internshipsByCity;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving internships by city: ${err.message}`);
+    }
+}
 module.exports = 
 {
     register,
@@ -156,5 +177,6 @@ module.exports =
     toDelete,
     active,
     inActive,
-    myInternships
+    myInternships,
+    byCity
 }
