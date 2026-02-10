@@ -249,6 +249,97 @@ const validateToUpdateUser =
         .notEmpty().withMessage('Role cannot be empty if provided!'),
     extractError
 ];
+const validateToUploadInternship = 
+[
+    body('position')
+        .exists().withMessage('Position must be provided!')
+        .bail()
+        .isString().withMessage('Position must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Position cannot be empty!'),
+    body('companyName')
+        .exists().withMessage('Company name must be provided!')    
+        .bail()                    
+        .isString().withMessage('Company name must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Company name cannot be empty!'),
+    body('responsibilities')
+        .exists().withMessage('Responsibilities must be provided!')
+        .bail()
+        .isArray({ min: 1 }).withMessage('Responsibilities must be a non-empty array')
+        .bail()
+        .custom((arr) => arr.every(item => typeof item === 'string' && item.trim() !== ''))
+        .withMessage('Each responsibility must be a non-empty string'),
+    body('preRequirements')
+        .exists().withMessage('Prerequirements must be provided!')
+        .bail()
+        .isArray({ min: 1 }).withMessage('Prerequirements must be a non-empty array')
+        .bail()
+        .custom((arr) => arr.every(item => typeof item === 'string' && item.trim() !== ''))
+        .withMessage('Each prerequirement must be a non-empty string'),
+    body('applicationDeadline')
+        .exists().withMessage('Application deadline must be provided!')    
+        .bail()                    
+        .isDate().withMessage('Application deadline must be a date!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Application deadline cannot be empty!'),
+    body('location')
+        .exists().withMessage('City must be provided!')    
+        .bail()                    
+        .isString().withMessage('City must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('City cannot be empty!'),
+    body('isVisible')
+        .optional()
+        .isBoolean().withMessage('Visibility must be boolean!'),
+    extractError
+];
+const validateToUpdateInternship =
+[
+    body('position')
+        .optional()
+        .isString().withMessage('Position must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Position cannot be empty if provided!'),
+    body('companyName')
+        .optional()
+        .isString().withMessage('Company name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Company name cannot be empty if provided!'),
+    body('responsibilities')
+        .optional()
+        .isArray({ min: 1 }).withMessage('Responsibilities must be a non-empty array if provided')
+        .bail()
+        .custom((arr) => arr.every(item => typeof item === 'string' && item.trim() !== ''))
+        .withMessage('Each responsibility must be a non-empty string if provided'),
+    body('preRequirements')
+        .optional()
+        .isArray({ min: 1 }).withMessage('Prerequirements must be a non-empty array if provided')
+        .bail()
+        .custom((arr) => arr.every(item => typeof item === 'string' && item.trim() !== ''))
+        .withMessage('Each prerequirement must be a non-empty string if provided'),
+    body('applicationDeadline')
+        .optional()
+        .isDate().withMessage('Application deadline must be a valid date!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Application deadline cannot be empty if provided!'),
+    body('location')
+        .optional()
+        .isString().withMessage('City must be a string if provided!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('City cannot be empty if provided!'),
+    body('isVisible')
+        .optional()
+        .isBoolean().withMessage('Visibility must be boolean!'),
+];
 module.exports = 
 { 
     validateRole, 
@@ -259,5 +350,7 @@ module.exports =
     validateToUpdateCity,
     validateToRegisterUser,
     validateToLoginUser,
-    validateToUpdateUser
+    validateToUpdateUser,
+    validateToUploadInternship,
+    validateToUpdateInternship
 };

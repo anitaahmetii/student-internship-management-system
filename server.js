@@ -5,13 +5,14 @@ const roleRoute = require('./routes/role.route');
 const userRoute = require('./routes/user.route');
 const stateRoute = require('./routes/state.route');
 const cityRoute = require('./routes/city.route');
+const internshipRoute = require('./routes/internship.route');
 
 app.use(express.json());
 app.use('/api/role', roleRoute);
 app.use('/api/user', userRoute);
 app.use('/api/state', stateRoute);
 app.use('/api/city', cityRoute);
-
+app.use('/api/internship', internshipRoute);
 
 const startRunning = async () => 
 {
