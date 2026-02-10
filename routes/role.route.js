@@ -2,10 +2,11 @@ const express = require('express');
 const route = express.Router();
 const roleController = require('../controllers/roles.controller');
 const validator = require('../middleware/validators');
+const auth = require('../middleware/auth');
 
-route.post('/add', validator.validateRole, roleController.createRole);
-route.get('/', roleController.getRoles);
-route.put('/update/:role', validator.validateToUpdateRole, roleController.updateRole);
-route.delete('/:role', roleController.deleteRole);
+route.post('/add', auth.verifyToken(['admin']), validator.validateRole, roleController.createRole);
+route.get('/', auth.verifyToken(['admin']), roleController.getRoles);
+route.put('/update/:role', auth.verifyToken(['admin']), validator.validateToUpdateRole, roleController.updateRole);
+route.delete('/:role', auth.verifyToken(['admin']), roleController.deleteRole);
 
 module.exports = route;
