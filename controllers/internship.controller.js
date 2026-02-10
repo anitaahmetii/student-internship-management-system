@@ -105,6 +105,22 @@ const getInActiveInternships = async (req, res) =>
         console.log(err.message);
     }
 }
+const getHRInternships = async (req, res) =>
+{
+    try
+    {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        const internships = await internshipService.myInternships(token);
+        res.status(200).json(internships);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports =
 {
     uploadInternship,
@@ -112,5 +128,6 @@ module.exports =
     updateInternship,
     deleteInternship,
     getActiveInternships,
-    getInActiveInternships
+    getInActiveInternships,
+    getHRInternships
 }

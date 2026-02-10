@@ -128,6 +128,26 @@ const inActive = async () =>
         throw new Error(`Database error while retrieving not active internships: ${err.message}`);
     }
 }
+const myInternships = async (token) => 
+{
+    try 
+    {
+        const hrUser = await userService.current(token);
+        const hrUserId = hrUser._id;
+
+        const hrInternships = await Internship.find({ $or: [{ uploadedBy: hrUserId },{ updatedBy: hrUserId }]})
+                                              .populate({ path: 'location', select: 'name -_id' })
+                                              .populate({ path: 'uploadedBy', select: 'email -_id' })
+                                              .populate({ path: 'updatedBy', select: 'email -_id' })
+                                              .lean();
+        if (hrInternships.length === 0) return "You haven’t uploaded any internships.";
+        return hrInternships;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving your internships: ${err.message}`);
+    }
+}
 module.exports = 
 {
     register,
@@ -135,5 +155,6 @@ module.exports =
     toUpdate,
     toDelete,
     active,
-    inActive
+    inActive,
+    myInternships
 }
