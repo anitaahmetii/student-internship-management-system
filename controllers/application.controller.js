@@ -117,6 +117,22 @@ const getApplicationsByStatus = async (req, res) =>
         console.log(err.message);
     }
 }
+const getAcceptedStudents = async (req, res) =>
+{
+    try
+    {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1]; 
+
+        const applications = await applicationService.getStudents(token);
+        res.status(200).json(applications);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports = 
 {
     uploadApplication,
@@ -125,5 +141,6 @@ module.exports =
     deleteApplication,
     getStudentApplications,
     getHrApplications,
-    getApplicationsByStatus
+    getApplicationsByStatus,
+    getAcceptedStudents
 }

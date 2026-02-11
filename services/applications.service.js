@@ -192,6 +192,26 @@ const searchByStatus = async (hrToken, status) =>
         throw new Error(`Database error while retrieving internship applications based on status: ${err.message}`)
     }
 }
+const getStudents = async (hrToken) => 
+{
+    try
+    {
+        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: hrUserId } = hrUser;
+
+        const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: 'accepted' })
+                                                        .select('-_id -feedback -reviewedBy -reviewedAt -isVisible -updatedAt -createdAt -__v')
+                                                        .populate({ path: 'internship', select: 'position -_id'})
+                                                        .populate({ path: 'student', select: 'email -_id'})
+                                                        .lean();
+        if (applications.length === 0) throw new Error(`No accepted applications found!`);
+        return applications;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving accepted internship applications for the student: ${err.message}`)
+    }
+}
 module.exports = 
 {
     register,
@@ -200,5 +220,6 @@ module.exports =
     toDelete,
     myApplicationsAsStudent,
     myApplicationsAsHr,
-    searchByStatus
+    searchByStatus,
+    getStudents
 }

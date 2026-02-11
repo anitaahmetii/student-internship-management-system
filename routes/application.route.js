@@ -11,5 +11,6 @@ route.delete('/delete/:application', auth.verifyToken(['admin', 'hr']), applicat
 route.get('/studentApplications', auth.verifyToken(['student']), applicationController.getStudentApplications);
 route.get('/hrApplications', auth.verifyToken(['hr']), applicationController.getHrApplications);
 route.get('/status/:status', auth.verifyToken(['admin', 'hr']), validate.validateToSearchByStatus, applicationController.getApplicationsByStatus);
+route.get('/acceptedStudents', auth.verifyToken(['admin', 'hr']), applicationController.getAcceptedStudents);
 
 module.exports = route;
