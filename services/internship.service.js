@@ -49,7 +49,7 @@ const toUpdate = async (internshipId, token, position, companyName, preRequireme
 {
     try 
     {
-        const internshipExists = await getById(internshipId);
+        const { exists: internshipExists } = await getById(internshipId);
         if (!internshipExists) throw new Error('Internship not found!');
 
         const loggedUser = await userService.current(token);

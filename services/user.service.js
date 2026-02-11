@@ -19,7 +19,7 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
             throw new Error(`You do not have permission to assign the ${role} role.`);
         }
 
-        const emailExists = await checkEmail(email);
+        const { exists: emailExists} = await checkEmail(email);
         if (emailExists) throw new Error("Email already exists!");
 
         const phoneNumberExists = await checkPhoneNumber(phoneNumber);
