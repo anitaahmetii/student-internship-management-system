@@ -115,7 +115,60 @@ const toDelete = async (applicationId, hrToken) =>
     }
     catch(err)
     {
-        throw new Error(`Database error while deleting internship application: ${err.message}`)
+        throw new Error(`Database error while deleting internship application: ${err.message}`);
+    }
+}
+const myApplicationsAsStudent = async (studentToken) =>
+{
+    try
+    {
+        const studentUser = jwt.verify(studentToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: studentUserId } = studentUser;
+
+        const applications = await InternshipApplication.find({ student: studentUserId })
+                                                        .select('-isVisible -createdAt -updatedAt -__v')
+                                                        .populate({ path: 'student', select: 'email -_id'})
+                                                        .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
+                                                                    populate: 
+                                                                    [
+                                                                        { path: 'location', select: 'name -_id' },
+                                                                        { path: 'uploadedBy', select: 'email -_id' },
+                                                                        { path: 'updatedBy', select: 'email -_id' }
+                                                                    ]})
+                                                        .lean();
+        if (applications.length === 0) throw new Error("You haven't applied to any internship yet!");
+        return applications;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving internship applications as student: ${err.message}`)
+    }
+}
+const myApplicationsAsHr = async (hrToken) =>
+{
+    try
+    {
+        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: hrUserId } = hrUser;
+
+        const reviews = await InternshipApplication.find({ reviewedBy: hrUserId })
+                                                    .select('-isVisible -createdAt -__v')
+                                                    .populate({ path: 'student', select: 'email -_id'})
+                                                    .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
+                                                                populate: 
+                                                                [
+                                                                    { path: 'location', select: 'name -_id' },
+                                                                    { path: 'uploadedBy', select: 'email -_id' },
+                                                                    { path: 'updatedBy', select: 'email -_id' }
+                                                                ]})
+                                                    .populate({ path: 'reviewedBy', select: 'email -_id'})
+                                                    .lean();
+        if (reviews.length === 0) throw new Error("You haven't reviewed any internship yet!");
+        return reviews;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving internship applications reviewed as hr: ${err.message}`)
     }
 }
 const findById = async (applicationId) =>
@@ -128,5 +181,7 @@ module.exports =
     register,
     getAll,
     toUpdate,
-    toDelete
+    toDelete,
+    myApplicationsAsStudent,
+    myApplicationsAsHr
 }
