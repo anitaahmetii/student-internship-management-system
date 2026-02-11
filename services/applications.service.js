@@ -176,6 +176,22 @@ const findById = async (applicationId) =>
     const exists = await InternshipApplication.findById({ _id: applicationId });
     return { exists: !!exists, internshipId: exists?.internship };
 }
+const searchByStatus = async (hrToken, status) =>
+{
+    try
+    {
+        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: hrUserId } = hrUser;
+
+        const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: status });
+        if (applications.length === 0) throw new Error(`No application found with ${status} status!`);
+        return applications;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving internship applications based on status: ${err.message}`)
+    }
+}
 module.exports = 
 {
     register,
@@ -183,5 +199,6 @@ module.exports =
     toUpdate,
     toDelete,
     myApplicationsAsStudent,
-    myApplicationsAsHr
+    myApplicationsAsHr,
+    searchByStatus
 }

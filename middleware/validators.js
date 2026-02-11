@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body, param, validationResult } = require('express-validator');
 
 const extractError = (req, res, next) => 
 {
@@ -358,6 +358,16 @@ const validateToUpdateApplication =
         .withMessage('Visibility must be boolean!'),
     extractError
 ];
+const validateToSearchByStatus = 
+[
+    param('status')
+        .trim()
+        .toLowerCase()
+        .notEmpty().withMessage("Status is required!")
+        .isIn(['pending', 'accepted', 'rejected'])
+        .withMessage("Status must be one of these values: 'pending', 'accepted', 'rejected'"),
+    extractError
+];
 module.exports = 
 { 
     validateRole, 
@@ -371,5 +381,6 @@ module.exports =
     validateToUpdateUser,
     validateToUploadInternship,
     validateToUpdateInternship,
-    validateToUpdateApplication
+    validateToUpdateApplication,
+    validateToSearchByStatus
 };

@@ -10,5 +10,6 @@ route.put('/update/:application', auth.verifyToken(['admin', 'hr']), validate.va
 route.delete('/delete/:application', auth.verifyToken(['admin', 'hr']), applicationController.deleteApplication);
 route.get('/studentApplications', auth.verifyToken(['student']), applicationController.getStudentApplications);
 route.get('/hrApplications', auth.verifyToken(['hr']), applicationController.getHrApplications);
+route.get('/status/:status', auth.verifyToken(['admin', 'hr']), validate.validateToSearchByStatus, applicationController.getApplicationsByStatus);
 
 module.exports = route;
