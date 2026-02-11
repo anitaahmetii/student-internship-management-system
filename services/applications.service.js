@@ -55,8 +55,22 @@ const hasStudentApplied = async (studentId, internshipId) =>
     const exists = await InternshipApplication.findOne({ student: studentId, internship: internshipId })
     return !!exists;
 }
-
+const getAll = async () => 
+{
+    const applications = await InternshipApplication.find({})
+                                                    .populate({ path: 'student', select: 'email -_id'})
+                                                    .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
+                                                                populate: 
+                                                                [
+                                                                    { path: 'location', select: 'name -_id' },
+                                                                    { path: 'uploadedBy', select: 'email -_id' },
+                                                                    { path: 'updatedBy', select: 'email -_id' }]})
+                                                   .lean();;
+    if (applications.length === 0) throw new Error("No internship applications found!");
+    return applications;
+}
 module.exports = 
 {
-    register
+    register,
+    getAll
 }

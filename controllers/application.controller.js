@@ -18,8 +18,21 @@ const uploadApplication = async (req, res) =>
         console.log(err.message);
     }
 }
-
+const getAllApplications = async (req, res) =>
+{
+    try
+    {
+        const applications = await applicationService.getAll();
+        res.status(200).json(applications);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports = 
 {
-    uploadApplication
+    uploadApplication,
+    getAllApplications
 }

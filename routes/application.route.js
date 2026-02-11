@@ -4,5 +4,6 @@ const auth = require('../middleware/auth');
 const applicationController = require('../controllers/application.controller');
 
 route.post('/register/:internship', auth.verifyToken(['student']), applicationController.uploadApplication);
+route.get('/', auth.verifyToken(['admin']), applicationController.getAllApplications);
 
 module.exports = route;
