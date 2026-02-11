@@ -50,9 +50,27 @@ const updateApplication = async (req, res) =>
         console.log(err.message);
     }
 }
+const deleteApplication = async (req, res) =>
+{
+    try
+    {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        const { application } = req.params;
+        const deleted = await applicationService.toDelete(application, token);
+        res.status(200).json(deleted);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports = 
 {
     uploadApplication,
     getAllApplications,
-    updateApplication
+    updateApplication,
+    deleteApplication
 }

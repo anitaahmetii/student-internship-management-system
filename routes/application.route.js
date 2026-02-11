@@ -7,5 +7,6 @@ const validate = require('../middleware/validators');
 route.post('/register/:internship', auth.verifyToken(['student']), applicationController.uploadApplication);
 route.get('/', auth.verifyToken(['admin']), applicationController.getAllApplications);
 route.put('/update/:application', auth.verifyToken(['admin', 'hr']), validate.validateToUpdateApplication, applicationController.updateApplication);
+route.delete('/delete/:application', auth.verifyToken(['admin', 'hr']), applicationController.deleteApplication);
 
 module.exports = route;

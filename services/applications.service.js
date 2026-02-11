@@ -96,6 +96,28 @@ const toUpdate = async (applicationId, hrToken, status, feedback, isVisible) =>
         throw new Error(`Database error while updating internship application: ${err.message}`);
     }
 }
+const toDelete = async (applicationId, hrToken) =>
+{
+    try
+    {
+        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: hrUserId } = hrUser;
+        
+        const { exists: applicationAvailable, internshipId } = await findById(applicationId);
+        if (!applicationAvailable) throw new Error("Internship application not found!");
+
+        const { hr } = await internshipService.getById(internshipId);
+
+        if(hrUserId.toString() !== hr.toString()) throw new Error("Access denied to delete this application!");
+
+        const deleteApplication = await InternshipApplication.findByIdAndDelete({ _id: applicationId });
+        return deleteApplication;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while deleting internship application: ${err.message}`)
+    }
+}
 const findById = async (applicationId) =>
 {
     const exists = await InternshipApplication.findById({ _id: applicationId });
@@ -105,5 +127,6 @@ module.exports =
 {
     register,
     getAll,
-    toUpdate
+    toUpdate,
+    toDelete
 }
