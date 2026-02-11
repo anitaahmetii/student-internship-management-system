@@ -31,8 +31,28 @@ const getAllApplications = async (req, res) =>
         console.log(err.message);
     }
 }
+const updateApplication = async (req, res) =>
+{
+    try
+    {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        const { application } = req.params;
+        const { status, feedback, isVisible } = req.body;
+
+        const updated = await applicationService.toUpdate(application, token, status, feedback, isVisible);
+        res.status(200).json(updated);
+    }
+    catch(err)
+    {
+        res.status(409).json(err.message);
+        console.log(err.message);
+    }
+}
 module.exports = 
 {
     uploadApplication,
-    getAllApplications
+    getAllApplications,
+    updateApplication
 }

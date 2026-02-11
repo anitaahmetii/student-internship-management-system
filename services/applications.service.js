@@ -65,12 +65,45 @@ const getAll = async () =>
                                                                     { path: 'location', select: 'name -_id' },
                                                                     { path: 'uploadedBy', select: 'email -_id' },
                                                                     { path: 'updatedBy', select: 'email -_id' }]})
-                                                   .lean();;
+                                                   .lean();
     if (applications.length === 0) throw new Error("No internship applications found!");
     return applications;
+}
+const toUpdate = async (applicationId, hrToken, status, feedback, isVisible) => 
+{
+    try 
+    {
+        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: hrUserId } = hrUser;
+
+        const { exists: applicationAvailable, internshipId } = await findById(applicationId);
+        if (!applicationAvailable) throw new Error("Internship application not found!");
+
+        const { hr } = await internshipService.getById(internshipId);
+
+        if(hrUserId.toString() !== hr.toString()) throw new Error("Access denied to review this application!");
+
+        const updateApplication = await InternshipApplication.findByIdAndUpdate({ _id: applicationId },
+                                                                                { status, 
+                                                                                  feedback,
+                                                                                  reviewedBy: hrUserId,
+                                                                                  isVisible },
+                                                                                { new: true, runValidators: true });
+        return updateApplication;                                                                               
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while updating internship application: ${err.message}`);
+    }
+}
+const findById = async (applicationId) =>
+{
+    const exists = await InternshipApplication.findById({ _id: applicationId });
+    return { exists: !!exists, internshipId: exists?.internship };
 }
 module.exports = 
 {
     register,
-    getAll
+    getAll,
+    toUpdate
 }

@@ -159,11 +159,9 @@ const validateToRegisterUser =
         .trim()                               
         .notEmpty().withMessage('Password cannot be empty!'),
     body('isVisible')
-        .optional()                         
-        .isBoolean().withMessage('Visibility must be boolean!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Visibility cannot be empty if provided!'),
+        .optional()
+        .isBoolean()
+        .withMessage('Visibility must be boolean!'),
     body('role')
         .exists().withMessage('Role must be provided!')    
         .bail()                    
@@ -236,11 +234,9 @@ const validateToUpdateUser =
         .trim()                               
         .notEmpty().withMessage('Password cannot be empty if provided!'),
     body('isVisible')
-        .optional()                         
-        .isBoolean().withMessage('Visibility must be boolean!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Visibility cannot be empty if provided!'),
+        .optional()
+        .isBoolean()
+        .withMessage('Visibility must be boolean!'),
     body('role')
         .optional()                         
         .isString().withMessage('Role must be a string!') 
@@ -339,6 +335,28 @@ const validateToUpdateInternship =
     body('isVisible')
         .optional()
         .isBoolean().withMessage('Visibility must be boolean!'),
+    extractError
+];
+const validateToUpdateApplication = 
+[
+    body('status')
+        .optional()                         
+        .isIn(['pending', 'accepted', 'rejected'])
+        .withMessage("Status must be one of these values: 'pending', 'accepted', 'rejected'")
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Status cannot be empty if provided!'),
+    body('feedback')
+        .optional()                         
+        .isString().withMessage('Feedback must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Feedback cannot be empty if provided!'),
+    body('isVisible')
+        .optional()
+        .isBoolean()
+        .withMessage('Visibility must be boolean!'),
+    extractError
 ];
 module.exports = 
 { 
@@ -352,5 +370,6 @@ module.exports =
     validateToLoginUser,
     validateToUpdateUser,
     validateToUploadInternship,
-    validateToUpdateInternship
+    validateToUpdateInternship,
+    validateToUpdateApplication
 };
