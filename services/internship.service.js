@@ -42,7 +42,7 @@ const getAll = async () =>
 const getById = async (internshipId) => 
 {
     const exists = await Internship.findById({ _id: internshipId });
-    return !!exists; 
+    return { exists: !!exists, id: exists?._id }; 
 }
 const toUpdate = async (internshipId, token, position, companyName, preRequirements, 
                       responsibilities, applicationDeadline, location, isVisible) =>
@@ -201,5 +201,6 @@ module.exports =
     inActive,
     myInternships,
     byCity,
-    byPosition
+    byPosition,
+    getById
 }
