@@ -12,5 +12,6 @@ route.get('/activeInternships', internshipController.getActiveInternships);
 route.get('/inActiveInternships', auth.verifyToken(['admin', 'hr']), internshipController.getInActiveInternships);
 route.get('/hrInternships', auth.verifyToken(['admin', 'hr']), internshipController.getHRInternships);
 route.get('/byCity/:city', internshipController.getInternshipsByCity);
+route.get('/byPosition/:position', internshipController.getInternshipByPosition);
 
 module.exports = route;

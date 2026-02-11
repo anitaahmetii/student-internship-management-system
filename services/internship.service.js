@@ -169,6 +169,28 @@ const byCity = async (city) =>
         throw new Error(`Database error while retrieving internships by city: ${err.message}`);
     }
 }
+const byPosition = async (search) =>
+{
+    try
+    {
+        const words = search.trim().split(/\s+/);
+        const internshipByPosition = await Internship.find({ $and: words.map(w => ({
+                                                                position: { $regex: w, $options: 'i' }
+                                                            }))})
+                                                    .select('-isVisible -createdAt -updatedAt -__v')    
+                                                    .populate({ path: 'location', select: 'name -_id' })
+                                                    .populate({ path: 'uploadedBy', select: 'email -_id' })
+                                                    .populate({ path: 'updatedBy', select: 'email -_id' })
+                                                    .lean();
+        // console.log(internshipByPosition);
+        if (internshipByPosition.length === 0) return "No internship found with this position!";
+        return internshipByPosition;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving internships by position: ${err.message}`);
+    }
+}
 module.exports = 
 {
     register,
@@ -178,5 +200,6 @@ module.exports =
     active,
     inActive,
     myInternships,
-    byCity
+    byCity,
+    byPosition
 }
