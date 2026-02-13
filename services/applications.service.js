@@ -212,6 +212,23 @@ const getStudents = async (hrToken) =>
         throw new Error(`Database error while retrieving accepted internship applications for the student: ${err.message}`)
     }
 }
+const getStudentsForEnrollments = async (hrToken, internshipId) => 
+{
+    try
+    {
+        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
+        const { _id: hrUserId } = hrUser;
+
+        const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: 'accepted', internship: internshipId });
+                                                       
+        if (applications.length === 0) throw new Error(`No accepted applications found!`);
+        return applications;
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while retrieving accepted internship applications for the student to enrollment: ${err.message}`)
+    }
+}
 module.exports = 
 {
     register,
@@ -221,5 +238,6 @@ module.exports =
     myApplicationsAsStudent,
     myApplicationsAsHr,
     searchByStatus,
-    getStudents
+    getStudents,
+    getStudentsForEnrollments
 }

@@ -115,7 +115,7 @@ const getAll = async () =>
 const checkEmail = async (email) =>
 {
     const exists = await User.findOne({ email: email });
-    return { exists: !!exists, userId: exists?.email };
+    return { exists: !!exists, userId: exists?._id };
 }
 const checkPhoneNumber = async (phoneNumber) =>
 {

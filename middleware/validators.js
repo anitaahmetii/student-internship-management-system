@@ -368,6 +368,25 @@ const validateToSearchByStatus =
         .withMessage("Status must be one of these values: 'pending', 'accepted', 'rejected'"),
     extractError
 ];
+const validateToEnrollment = 
+[
+   body('position')
+        .exists().withMessage('Position must be provided!')
+        .bail()
+        .isString().withMessage('Position must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Position cannot be empty!'),
+    body('mentor')
+        .exists().withMessage('Mentor email must be provided!')    
+        .bail()                    
+        .isString().withMessage('Mentor email must be a string!') 
+        .bail()
+        .trim()                               
+        .notEmpty().withMessage('Mentor email cannot be empty!'), 
+    extractError
+];
+
 module.exports = 
 { 
     validateRole, 
@@ -382,5 +401,6 @@ module.exports =
     validateToUploadInternship,
     validateToUpdateInternship,
     validateToUpdateApplication,
-    validateToSearchByStatus
+    validateToSearchByStatus,
+    validateToEnrollment
 };

@@ -191,6 +191,11 @@ const byPosition = async (search) =>
         throw new Error(`Database error while retrieving internships by position: ${err.message}`);
     }
 }
+const getIdByPositionName = async (position) =>
+{
+    const exists = await Internship.findOne({ position: { $regex: position, $options: 'i'}});
+    return { exists: !!exists, id: exists?._id }
+}
 module.exports = 
 {
     register,
@@ -202,5 +207,6 @@ module.exports =
     myInternships,
     byCity,
     byPosition,
-    getById
+    getById,
+    getIdByPositionName
 }
