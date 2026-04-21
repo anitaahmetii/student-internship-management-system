@@ -16,7 +16,7 @@ const verifyToken = (allowedRoles = []) =>
         {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-            const user = await User.findById(decoded._id);
+            const user = await User.findById(decoded._id).populate({ path: 'role', select: 'role -_id'}).lean();
             if (!user) return res.status(401).json({ error: 'User not found' });
 
             if (allowedRoles.length && !allowedRoles.includes(user.role.role))
