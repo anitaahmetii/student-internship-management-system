@@ -46,10 +46,6 @@ const generateTokens = async (user) =>
     const payload = 
     {
         _id: user._id,
-        name: user.name,
-        surname: user.surname,
-        email: user.email,
-        role: user.role.role
     }
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2d'});
@@ -68,6 +64,7 @@ const login = async (email, password) =>
         if (!verifyPassword) throw new Error("Password does not match");
         
         const { accessToken: userAccessToken, refreshToken: userRefreshToken } = await generateTokens(user);
+        await User.findByIdAndUpdate(user._id, { refreshToken: userRefreshToken });
         
         return { userAccessToken, userRefreshToken };
     }
@@ -76,16 +73,33 @@ const login = async (email, password) =>
         throw new Error(`Database error while logging user: ${err.message}`);
     }
 }
-const refresh = async (refreshToken) => 
+const logout = async (userId) => {
+    try 
+    {
+        await User.findByIdAndUpdate(userId, { refreshToken: null });
+    } 
+    catch (err) 
+    {
+        throw new Error(err.message);
+    }
+}
+const refresh = async (tokenToRefresh) => 
 {
     try
     {
-        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-        const user = await getUserByIdAndRole(payload._id);
-        if (!user) throw new Error('User not found');
-        return generateTokens(user);
+        const payload = jwt.verify(tokenToRefresh, process.env.REFRESH_TOKEN_SECRET);
+
+        const user = await User.findOne({ _id: payload._id, refreshToken: tokenToRefresh });
+        if (!user) throw new Error('Unauthorized');
+
+        const tokens = await generateTokens(user);
+
+        await User.findByIdAndUpdate(user._id, { refreshToken: tokens.refreshToken });
+
+        return tokens;
     }
-    catch (err) {
+    catch (err) 
+    {
         throw new Error(`Invalid refresh token: ${err.message}`);
     }
 }
@@ -137,13 +151,6 @@ const checkUser = async (email) =>
     const user = await User.findOne({ email: email })
                             .populate({ path: 'city', select: 'name -_id'})
                             .populate({ path: 'role', select: 'role -_id'}).lean();
-    return user;
-}
-const getUserByIdAndRole = async (id) =>
-{
-    const user = await User.findById({ _id: id })
-                           .select('-password')
-                           .populate({ path: 'role', select: 'role -_id'}).lean();
     return user;
 }
 const current = async (token) =>
@@ -242,5 +249,6 @@ module.exports =
     current,
     toDelete,
     toUpdate,
-    checkEmail
+    checkEmail, 
+    logout
 };

@@ -9,7 +9,8 @@ const mongoose = require('mongoose');
     city: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true }, 
     password: { type: String, required: true, min: 6 },
     isVisible: { type: Boolean, default: false },
-    role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true } 
+    role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
+    refreshToken: { type: String, default: null }
 }, { timestamps: true });
 
 const User = mongoose.model('User', UserSchema);
