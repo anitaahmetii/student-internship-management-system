@@ -19,14 +19,25 @@ const loginUser = async (req, res) =>
     try
     {
         const { email, password } = req.body;
-        const { userAccessToken, userRefreshToken } = await userService.login(email, password);
-        // console.log(loginUser);
-        return res.status(200).json({ accessToken: userAccessToken, refreshToken: userRefreshToken });
+        const tokens = await userService.login(email, password);
+
+        return res.status(200).json({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
     }
     catch(err)
     {
-        res.status(409).json(err.message);
-        console.log(err.message);
+        res.status(401).json(err.message);
+    }
+}
+const logoutUser = async (req, res) => 
+{
+    try
+    {
+        await userService.logout(req.user._id);
+        res.status(200).json({ message: "Logged out successfully" });
+    }
+    catch(err)
+    {
+        return res.status(500).json({ error: err.message });
     }
 }
 const getUsers = async (req, res) =>
@@ -47,12 +58,12 @@ const refreshToken = async (req, res) =>
     try 
     {
         const { refreshToken } = req.body;
-        const refresh = await userService.refresh(refreshToken);
-        res.json(refresh);
+        const tokens = await userService.refresh(refreshToken);
+        res.status(200).json({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
     }
     catch(err)
     {
-        res.status(409).json(err.message);
+        res.status(401).json(err.message);
         console.log(err.message);
     }
 }
@@ -60,9 +71,7 @@ const getCurrentUser = async (req, res) =>
 {
     try
     {
-        const header = req.headers.authorization;
-        const token = header && header.split(' ')[1];
-        const currentUser = await userService.current(token);
+        const currentUser = await userService.current(req.user._id);
         res.json(currentUser);
     }
     catch(err)
@@ -109,5 +118,6 @@ module.exports =
     refreshToken, 
     getCurrentUser,
     deleteUser,
-    updateUser
+    updateUser,
+    logoutUser
 };

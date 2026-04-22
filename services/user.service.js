@@ -46,11 +46,11 @@ const generateTokens = async (user) =>
     const payload = 
     {
         _id: user._id,
+        role: user.role.role
     }
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2d'});
-    // const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    // console.log(decode);
+  
     return { accessToken, refreshToken };
 }
 const login = async (email, password) =>
@@ -63,10 +63,11 @@ const login = async (email, password) =>
         const verifyPassword = await checkPassword(password, user.password);
         if (!verifyPassword) throw new Error("Password does not match");
         
-        const { accessToken: userAccessToken, refreshToken: userRefreshToken } = await generateTokens(user);
-        await User.findByIdAndUpdate(user._id, { refreshToken: userRefreshToken });
+        const tokens = await generateTokens(user);
+
+        await User.findByIdAndUpdate(user._id, { refreshToken: tokens.refreshToken });
         
-        return { userAccessToken, userRefreshToken };
+        return tokens;
     }
     catch(err)
     {
@@ -89,8 +90,9 @@ const refresh = async (tokenToRefresh) =>
     {
         const payload = jwt.verify(tokenToRefresh, process.env.REFRESH_TOKEN_SECRET);
 
-        const user = await User.findOne({ _id: payload._id, refreshToken: tokenToRefresh });
-        if (!user) throw new Error('Unauthorized');
+        const user = await User.findById(payload._id);
+
+        if (!user || user.refreshToken !== tokenToRefresh) throw new Error('Unauthorized');
 
         const tokens = await generateTokens(user);
 
@@ -153,12 +155,10 @@ const checkUser = async (email) =>
                             .populate({ path: 'role', select: 'role -_id'}).lean();
     return user;
 }
-const current = async (token) =>
+const current = async (userId) =>
 {
     try 
     {
-        const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        const userId = verifyToken._id;
         const currentUser = await User.findById({ _id: userId }).select('-password');
         return currentUser;
     }

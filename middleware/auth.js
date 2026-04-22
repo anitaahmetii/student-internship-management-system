@@ -1,34 +1,40 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
-const verifyToken = (allowedRoles = []) => 
+const verifyToken = (req, res, next) => 
 {
-    return async (req, res, next) => 
+    try
     {
-
         const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
+        const token = authHeader && authHeader.split(' ')[1]; 
 
-        if (!token) return res.status(401).json({ error: 'Access denied' });
+        if (!token) return res.status(401).json({ error: 'You need to logg in' });
 
-        try
-        {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        req.user = decodeToken;
 
-            const user = await User.findById(decoded._id).populate({ path: 'role', select: 'role -_id'}).lean();
-            if (!user) return res.status(401).json({ error: 'User not found' });
-
-            if (allowedRoles.length && !allowedRoles.includes(user.role.role))
-            {
-                return res.status(403).json({ error: 'Insufficient permissions' });
-            }
-            next();
-        }
-        catch (err) 
-        {
-            return res.status(403).json({ error: 'Invalid token' });
-        }   
+        next();
     }
+    catch (err) 
+    {
+        return res.status(401).json({ error: 'Invalid token' });
+    }   
 }
-module.exports = { verifyToken };
+const authorizeRole = (...roles) => 
+{
+    return (req, res, next) => 
+    {
+       console.log("Role: " + req.user.role);
+       console.log(roles);
+       if (!roles.includes(req.user.role))
+        {
+            console.log("Role ne : " + req.user.role);
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        console.log("Role pas: " + req.user.role);
+
+        next();
+    };
+}
+
+module.exports = { verifyToken, authorizeRole }
