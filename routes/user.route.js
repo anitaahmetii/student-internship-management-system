@@ -4,13 +4,268 @@ const userController = require('../controllers/user.controller');
 const validator = require('../middleware/validators');
 const { verifyToken, authorizeRole } = require('../middleware/auth');
 
-route.post('/register', validator.validateToRegisterUser, userController.registerUser);
-route.post('/login', validator.validateToLoginUser, userController.loginUser);
-route.get('/', verifyToken, authorizeRole('admin'), userController.getUsers);
-route.post('/refresh', verifyToken, userController.refreshToken);
-route.get('/current', verifyToken, userController.getCurrentUser);
-route.delete('/delete/:id', verifyToken, authorizeRole('admin'), userController.deleteUser);
-route.put('/update/:email', verifyToken, authorizeRole('admin'), validator.validateToUpdateUser, userController.updateUser);
-route.post('/logout', verifyToken, userController.logoutUser);
 
+route.post('/register', validator.validateToRegisterUser, userController.registerUser);
+/**
+ * @swagger
+ * /api/user/register:
+ *   post:
+ *     summary: Register new user
+ *     description: Creates a new user account and assigns a role (except admin)
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - surname
+ *               - email
+ *               - birthDate
+ *               - city
+ *               - password
+ *               - role
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John
+ *               surname:
+ *                 type: string
+ *                 example: Smith
+ *               email:
+ *                 type: string
+ *                 example: john@gmail.com
+ *               birthDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2000-01-01
+ *               phoneNumber:
+ *                 type: string
+ *                 example: "044123456"
+ *               city:
+ *                 type: string
+ *                 example: Pristina
+ *               password:
+ *                 type: string
+ *                 example: "123456"
+ *               isVisible:
+ *                 type: boolean
+ *                 example: true
+ *               role:
+ *                 type: string
+ *                 example: student
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error
+ */
+
+route.post('/login', validator.validateToLoginUser, userController.loginUser);
+/**
+ * @swagger
+ * /api/user/login:
+ *   post:
+ *     summary: Login user
+ *     description: Authenticates user using email and password and returns JWT tokens
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Login successful, returns access and refresh tokens
+ *       400:
+ *         description: Invalid credentials or validation error
+ *       404:
+ *         description: User not found
+ */
+
+route.get('/', verifyToken, authorizeRole('admin'), userController.getUsers);
+/**
+ * @swagger
+ * /api/user:
+ *   get:
+ *     summary: Get all users
+ *     description: Returns a list of all users (admin only access)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved users
+ *       401:
+ *         description: Unauthorized - token missing or invalid
+ *       403:
+ *         description: Forbidden - admin access required
+ */
+
+route.post('/refreshToken', userController.refreshToken);
+/**
+ * @swagger
+ * /api/user/refreshToken:
+ *   post:
+ *     summary: Refresh access token
+ *     description: Generates a new access token using a valid refresh token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6...
+ *     responses:
+ *       200:
+ *         description: New tokens generated successfully
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
+
+route.get('/currentUser', verifyToken, userController.getCurrentUser);
+/**
+ * @swagger
+ * /api/user/currentUser:
+ *  get:
+ *      summary: Get current user
+ *      description: Retrieve the currently authenticated user
+ *      tags: [User]
+ *      security:
+ *          - bearerAuth: []
+ *      responses:
+ *          200:
+ *              description: Current user retrieved successfully
+ *          401:
+ *              description: Unauthorized
+ *      
+ */
+
+route.delete('/delete/:id', verifyToken, authorizeRole('admin'), userController.deleteUser);
+/**
+ * @swagger
+ * /api/user/delete/{id}:
+ *   delete:
+ *     summary: Delete user (admin-only)
+ *     description: Delete user by ID (admin-only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to delete
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (admin only)
+ *       404:
+ *         description: User not found
+ */
+
+route.put('/update/:email', verifyToken, authorizeRole('admin'), validator.validateToUpdateUser, userController.updateUser);
+/**
+ * @swagger
+ * /api/user/update/{email}:
+ *   put:
+ *     summary: Update user (admin-only)
+ *     description: Update user data by email (admin-only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User email to update
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John
+ *               surname:
+ *                 type: string
+ *                 example: Doe
+ *               email:
+ *                 type: string
+ *                 example: john.doe@example.com
+ *               birthDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2000-01-01
+ *               phoneNumber:
+ *                 type: string
+ *                 example: "044-123-456"
+ *               city:
+ *                 type: string
+ *                 example: Pristina
+ *               password:
+ *                 type: string
+ *                 example: newpassword123
+ *               isVisible:
+ *                 type: boolean
+ *                 example: true
+ *               role:
+ *                 type: string
+ *                 example: admin
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (admin only)
+ *       404:
+ *         description: User not found
+ */
+route.post('/logout', verifyToken, userController.logoutUser);
+/**
+ * @swagger
+ * /api/user/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Logs out the currently authenticated user by invalidating the refresh token
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       401:
+ *         description: Unauthorized (invalid or missing token)
+ */
 module.exports = route;

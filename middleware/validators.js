@@ -204,11 +204,9 @@ const validateToUpdateUser =
         .trim()                               
         .notEmpty().withMessage('Surname cannot be empty if provided!'),
     body('email')
-        .optional()                         
-        .isString().withMessage('Email must be string!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Email cannot be empty if provided!'),
+        .optional()
+        .isEmail().withMessage('Email must be valid!')
+        .normalizeEmail(),
     body('birthDate')
         .optional()                         
         .isDate().withMessage('Birthdate must be date!') 

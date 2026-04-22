@@ -1,20 +1,33 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
-    definition: {
+    definition: 
+    {
         openapi: '3.0.0',
-        info: {
+        info: 
+        {
             title: 'SIMS - Student Internship Management System',
             version: '1.0.0',
             description: 'REST API documentation for SIMS platform, including authentication, users, internships, and applications management.',
         },
-        servers: [
+        server: 
+        {
+            url: 'http://localhost:3000',
+        },
+        components: 
+        {
+            securitySchemes: 
             {
-                url: 'http://localhost:3000',
-            },
-        ],
+                bearerAuth: 
+                {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                }
+            }
+        }
     },
-    apis: ['../routes/*.js'], 
+    apis: ['./routes/*.js'], 
 };
 
 module.exports = swaggerJsdoc(options);
