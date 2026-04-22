@@ -11,7 +11,6 @@ const createState = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const getStates = async (req, res) => 
