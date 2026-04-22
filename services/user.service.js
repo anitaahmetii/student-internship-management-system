@@ -48,7 +48,7 @@ const generateTokens = async (user) =>
         _id: user._id,
         role: user.role.role
     }
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2d'});
   
     return { accessToken, refreshToken };
@@ -155,12 +155,10 @@ const checkUser = async (email) =>
                             .populate({ path: 'role', select: 'role -_id'}).lean();
     return user;
 }
-const current = async (token) =>
+const current = async (userId) =>
 {
     try 
     {
-        const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        const userId = verifyToken._id;
         const currentUser = await User.findById({ _id: userId }).select('-password');
         return currentUser;
     }

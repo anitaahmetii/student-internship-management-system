@@ -11,5 +11,6 @@ route.post('/refresh', verifyToken, userController.refreshToken);
 route.get('/current', verifyToken, userController.getCurrentUser);
 route.delete('/delete/:id', verifyToken, authorizeRole('admin'), userController.deleteUser);
 route.put('/update/:email', verifyToken, authorizeRole('admin'), validator.validateToUpdateUser, userController.updateUser);
+route.post('/logout', verifyToken, userController.logoutUser);
 
 module.exports = route;

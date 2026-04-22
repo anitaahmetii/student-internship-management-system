@@ -28,6 +28,18 @@ const loginUser = async (req, res) =>
         res.status(401).json(err.message);
     }
 }
+const logoutUser = async (req, res) => 
+{
+    try
+    {
+        await userService.logout(req.user._id);
+        res.status(200).json({ message: "Logged out successfully" });
+    }
+    catch(err)
+    {
+        return res.status(500).json({ error: err.message });
+    }
+}
 const getUsers = async (req, res) =>
 {
     try
@@ -59,9 +71,7 @@ const getCurrentUser = async (req, res) =>
 {
     try
     {
-        const header = req.headers.authorization;
-        const token = header && header.split(' ')[1];
-        const currentUser = await userService.current(token);
+        const currentUser = await userService.current(req.user._id);
         res.json(currentUser);
     }
     catch(err)
@@ -108,5 +118,6 @@ module.exports =
     refreshToken, 
     getCurrentUser,
     deleteUser,
-    updateUser
+    updateUser,
+    logoutUser
 };
