@@ -2,14 +2,12 @@ require('dotenv').config();
 const InternshipApplication = require('../models/InternshipApplication');
 const jwt = require('jsonwebtoken');
 const internshipService = require('./internship.service');
+const Internship = require('../models/Internship');
 
-const register = async (studentToken, internshipId) =>
+const register = async (studentId, internshipId) =>
 {
     try
     {
-        const student = jwt.verify(studentToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: studentId } = student;
-
         const { exists: internshipAvailable } = await internshipService.getById(internshipId);
         if (!internshipAvailable) throw new Error("Internship not found!");
 
@@ -69,24 +67,22 @@ const getAll = async () =>
     if (applications.length === 0) throw new Error("No internship applications found!");
     return applications;
 }
-const toUpdate = async (applicationId, hrToken, status, feedback, isVisible) => 
+const toUpdate = async (applicationId, userId, status, feedback, isVisible) => 
 {
     try 
     {
-        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: hrUserId } = hrUser;
 
         const { exists: applicationAvailable, internshipId } = await findById(applicationId);
         if (!applicationAvailable) throw new Error("Internship application not found!");
 
-        const { hr } = await internshipService.getById(internshipId);
+        const uploadedInternship = await Internship.findOne({ _id: internshipId, uploadedBy: userId });
+        if (!uploadedInternship) throw new Error("You have not uploaded this internship!");
 
-        if(hrUserId.toString() !== hr.toString()) throw new Error("Access denied to review this application!");
 
         const updateApplication = await InternshipApplication.findByIdAndUpdate({ _id: applicationId },
                                                                                 { status, 
                                                                                   feedback,
-                                                                                  reviewedBy: hrUserId,
+                                                                                  reviewedBy: userId,
                                                                                   isVisible },
                                                                                 { new: true, runValidators: true });
         return updateApplication;                                                                               
@@ -96,19 +92,16 @@ const toUpdate = async (applicationId, hrToken, status, feedback, isVisible) =>
         throw new Error(`Database error while updating internship application: ${err.message}`);
     }
 }
-const toDelete = async (applicationId, hrToken) =>
+const toDelete = async (applicationId, userId) =>
 {
     try
     {
-        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: hrUserId } = hrUser;
         
         const { exists: applicationAvailable, internshipId } = await findById(applicationId);
         if (!applicationAvailable) throw new Error("Internship application not found!");
 
-        const { hr } = await internshipService.getById(internshipId);
-
-        if(hrUserId.toString() !== hr.toString()) throw new Error("Access denied to delete this application!");
+        const uploadedInternship = await Internship.findOne({ _id: internshipId, uploadedBy: userId });
+        if (!uploadedInternship) throw new Error("You have not uploaded this internship!");
 
         const deleteApplication = await InternshipApplication.findByIdAndDelete({ _id: applicationId });
         return deleteApplication;
@@ -118,14 +111,11 @@ const toDelete = async (applicationId, hrToken) =>
         throw new Error(`Database error while deleting internship application: ${err.message}`);
     }
 }
-const myApplicationsAsStudent = async (studentToken) =>
+const myApplicationsAsStudent = async (studentId) =>
 {
     try
     {
-        const studentUser = jwt.verify(studentToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: studentUserId } = studentUser;
-
-        const applications = await InternshipApplication.find({ student: studentUserId })
+        const applications = await InternshipApplication.find({ student: studentId })
                                                         .select('-isVisible -createdAt -updatedAt -__v')
                                                         .populate({ path: 'student', select: 'email -_id'})
                                                         .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
@@ -144,14 +134,11 @@ const myApplicationsAsStudent = async (studentToken) =>
         throw new Error(`Database error while retrieving internship applications as student: ${err.message}`)
     }
 }
-const myApplicationsAsHr = async (hrToken) =>
+const myApplicationsAsHr = async (hrId) =>
 {
     try
     {
-        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: hrUserId } = hrUser;
-
-        const reviews = await InternshipApplication.find({ reviewedBy: hrUserId })
+        const reviews = await InternshipApplication.find({ reviewedBy: hrId })
                                                     .select('-isVisible -createdAt -__v')
                                                     .populate({ path: 'student', select: 'email -_id'})
                                                     .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
@@ -176,14 +163,11 @@ const findById = async (applicationId) =>
     const exists = await InternshipApplication.findById({ _id: applicationId });
     return { exists: !!exists, internshipId: exists?.internship };
 }
-const searchByStatus = async (hrToken, status) =>
+const searchByStatus = async (hrId, status) =>
 {
     try
     {
-        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: hrUserId } = hrUser;
-
-        const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: status });
+        const applications = await InternshipApplication.find({ reviewedBy: hrId, status: status });
         if (applications.length === 0) throw new Error(`No application found with ${status} status!`);
         return applications;
     }
@@ -192,14 +176,11 @@ const searchByStatus = async (hrToken, status) =>
         throw new Error(`Database error while retrieving internship applications based on status: ${err.message}`)
     }
 }
-const getStudents = async (hrToken) => 
+const getStudents = async (hrId) => 
 {
     try
     {
-        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: hrUserId } = hrUser;
-
-        const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: 'accepted' })
+        const applications = await InternshipApplication.find({ reviewedBy: hrId, status: 'accepted' })
                                                         .select('-_id -feedback -reviewedBy -reviewedAt -isVisible -updatedAt -createdAt -__v')
                                                         .populate({ path: 'internship', select: 'position -_id'})
                                                         .populate({ path: 'student', select: 'email -_id'})

@@ -4,12 +4,9 @@ const uploadApplication = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
         const { internship } = req.params;
 
-        const applicationInternship = await applicationService.register(token, internship);
+        const applicationInternship = await applicationService.register(req.user._id, internship);
         res.status(201).json(applicationInternship);
     }
     catch(err)
@@ -35,13 +32,10 @@ const updateApplication = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
         const { application } = req.params;
         const { status, feedback, isVisible } = req.body;
 
-        const updated = await applicationService.toUpdate(application, token, status, feedback, isVisible);
+        const updated = await applicationService.toUpdate(application, req.user._id, status, feedback, isVisible);
         res.status(200).json(updated);
     }
     catch(err)
@@ -54,11 +48,9 @@ const deleteApplication = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
 
         const { application } = req.params;
-        const deleted = await applicationService.toDelete(application, token);
+        const deleted = await applicationService.toDelete(application, req.user._id);
         res.status(200).json(deleted);
     }
     catch(err)
@@ -71,10 +63,7 @@ const getStudentApplications = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
-        const applications = await applicationService.myApplicationsAsStudent(token);
+        const applications = await applicationService.myApplicationsAsStudent(req.user._id);
         res.status(200).json(applications);
     }
     catch(err)
@@ -87,10 +76,7 @@ const getHrApplications = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
-        const applications = await applicationService.myApplicationsAsHr(token);
+        const applications = await applicationService.myApplicationsAsHr(req.user._id);
         res.status(200).json(applications);
     }
     catch(err)
@@ -103,12 +89,9 @@ const getApplicationsByStatus = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1]; 
-        
         const { status } = req.params;
 
-        const applications = await applicationService.searchByStatus(token, status);
+        const applications = await applicationService.searchByStatus(req.user._id, status);
         res.status(200).json(applications);
     }
     catch(err)
@@ -121,10 +104,7 @@ const getAcceptedStudents = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1]; 
-
-        const applications = await applicationService.getStudents(token);
+        const applications = await applicationService.getStudents(req.user._id);
         res.status(200).json(applications);
     }
     catch(err)
