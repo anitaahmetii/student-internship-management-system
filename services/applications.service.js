@@ -193,13 +193,10 @@ const getStudents = async (hrId) =>
         throw new Error(`Database error while retrieving accepted internship applications for the student: ${err.message}`)
     }
 }
-const getStudentsForEnrollments = async (hrToken, internshipId) => 
+const getStudentsForEnrollments = async (hrUserId, internshipId) => 
 {
     try
     {
-        const hrUser = jwt.verify(hrToken, process.env.ACCESS_TOKEN_SECRET);
-        const { _id: hrUserId } = hrUser;
-
         const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: 'accepted', internship: internshipId });
                                                        
         if (applications.length === 0) throw new Error(`No accepted applications found!`);

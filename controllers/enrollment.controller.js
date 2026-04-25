@@ -4,11 +4,9 @@ const registerEnrollment = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
         const { position, mentor } = req.body;
 
-        const register = await enrollmentService.register(token, position, mentor);
+        const register = await enrollmentService.register(req.user._id, position, mentor);
         res.status(201).json(register);
     }
     catch(err)
@@ -21,12 +19,9 @@ const getEnrollments = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-        
         const { position } = req.params;
 
-        const enrollments = await enrollmentService.getAll(token, position);
+        const enrollments = await enrollmentService.getAll(req.user._id, position);
         res.status(200).json(enrollments);
     }
     catch(err)
