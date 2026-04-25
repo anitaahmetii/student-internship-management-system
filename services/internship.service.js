@@ -2,20 +2,18 @@ const Internship = require('../models/Internship');
 const userService = require('./user.service');
 const cityService = require('./city.service');
 
-const register = async (token, position, companyName, preRequirements, responsibilities, 
+const register = async (userId, position, companyName, preRequirements, responsibilities, 
                         applicationDeadline, location, isVisible) =>
 {
     try
     {
-        const loggedUser = await userService.current(token);
-        const { _id: loggedUserId } = loggedUser;
         
         const { exists: cityExists, cityId } = await cityService.findCity(location);
         if (!cityExists) throw new Error("City not found!");
 
         const internship = new Internship({ position, companyName, preRequirements, responsibilities, 
                                             applicationDeadline, location: cityId, 
-                                            uploadedBy: loggedUserId, isVisible});
+                                            uploadedBy: userId, isVisible});
         return await internship.save();
     }
     catch(err)
@@ -44,16 +42,16 @@ const getById = async (internshipId) =>
     const exists = await Internship.findById({ _id: internshipId });
     return { exists: !!exists, id: exists?._id, hr: exists?.uploadedBy }; 
 }
-const toUpdate = async (internshipId, token, position, companyName, preRequirements, 
+const toUpdate = async (internshipId, userId, position, companyName, preRequirements, 
                       responsibilities, applicationDeadline, location, isVisible) =>
 {
     try 
     {
-        const { exists: internshipExists } = await getById(internshipId);
+        const { exists: internshipExists, hr } = await getById(internshipId);
         if (!internshipExists) throw new Error('Internship not found!');
 
-        const loggedUser = await userService.current(token);
-        const { _id: loggedUserId } = loggedUser;
+        const loggedUser = await userService.current(userId);
+        if (!loggedUser._id.equals(hr)) throw new Error("You did not uploaded this internship!");
 
         let cityAvailable, locationId;
         if (location)
@@ -61,16 +59,15 @@ const toUpdate = async (internshipId, token, position, companyName, preRequireme
             ({ exists: cityAvailable, cityId: locationId } = await cityService.findCity(location));
             if (!cityAvailable) throw new Error("City not found!");
         }
-
         const updateInternship = await Internship.findByIdAndUpdate({ _id: internshipId },
                                                                     { position, 
-                                                                      companyName,
-                                                                      preRequirements,
-                                                                      responsibilities, 
-                                                                      applicationDeadline,
-                                                                      location: locationId, 
-                                                                      updatedBy: loggedUserId,
-                                                                      isVisible },
+                                                                    companyName,
+                                                                    preRequirements,
+                                                                    responsibilities, 
+                                                                    applicationDeadline,
+                                                                    location: locationId, 
+                                                                    updatedBy: loggedUser._id,
+                                                                    isVisible },
                                                                     { new: true, runValidators: true });
         return updateInternship;
     }
@@ -110,11 +107,12 @@ const active = async () =>
         throw new Error(`Database error while retrieving active internships: ${err.message}`);
     }
 }
-const inActive = async () => 
+const inActive = async (userId) => 
 {
     try
     {
-        const inActiveInternships = await Internship.find({ applicationDeadline: { $lt: Date.now() }})
+        const inActiveInternships = await Internship.find({ applicationDeadline: { $lt: Date.now() },
+                                                            uploadedBy: userId })
                                                   .select('-isVisible -createdAt -updatedAt -__v')
                                                   .populate({ path: 'location', select: 'name -_id' })
                                                   .populate({ path: 'uploadedBy', select: 'email -_id' })
@@ -128,14 +126,12 @@ const inActive = async () =>
         throw new Error(`Database error while retrieving not active internships: ${err.message}`);
     }
 }
-const myInternships = async (token) => 
+const myInternships = async (userId) => 
 {
     try 
     {
-        const hrUser = await userService.current(token);
-        const hrUserId = hrUser._id;
 
-        const hrInternships = await Internship.find({ $or: [{ uploadedBy: hrUserId },{ updatedBy: hrUserId }]})
+        const hrInternships = await Internship.find({ $or: [{ uploadedBy: userId }]})
                                               .populate({ path: 'location', select: 'name -_id' })
                                               .populate({ path: 'uploadedBy', select: 'email -_id' })
                                               .populate({ path: 'updatedBy', select: 'email -_id' })

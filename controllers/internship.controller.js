@@ -4,12 +4,10 @@ const uploadInternship = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
 
         const { position, companyName, preRequirements, responsibilities, 
                 applicationDeadline, location, isVisible } = req.body;
-        const uploadedInternship = await internshipService.register(token,
+        const uploadedInternship = await internshipService.register(req.user._id,
                                                                     position, 
                                                                     companyName, 
                                                                     preRequirements, 
@@ -42,14 +40,12 @@ const updateInternship = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
         const { internship } = req.params;
         const { position, companyName, preRequirements, 
                 responsibilities, applicationDeadline, location, isVisible } = req.body;
         
         const updatedInternship = await internshipService.toUpdate(internship, 
-                                                                    token,
+                                                                    req.user._id,
                                                                     position, 
                                                                     companyName, 
                                                                     preRequirements, 
@@ -96,7 +92,7 @@ const getInActiveInternships = async (req, res) =>
 {
     try
     {
-        const internships = await internshipService.inActive();
+        const internships = await internshipService.inActive(req.user._id);
         res.status(200).json(internships);
     }
     catch(err)
@@ -109,10 +105,7 @@ const getHRInternships = async (req, res) =>
 {
     try
     {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
-        const internships = await internshipService.myInternships(token);
+        const internships = await internshipService.myInternships(req.user._id);
         res.status(200).json(internships);
     }
     catch(err)
