@@ -5,7 +5,7 @@ const connectDB = async () =>
 {
     try
     {
-        await mongoose.connect(process.env.DATABASE_CONNECTION_STRING);
+        await mongoose.connect(process.env.DATABASE, { dbName: "SIMS" });
     }
     catch(err)
     {
