@@ -192,6 +192,14 @@ const getIdByPositionName = async (position) =>
     const exists = await Internship.findOne({ position: { $regex: position, $options: 'i'}});
     return { exists: !!exists, id: exists?._id }
 }
+const getPositionById = async (internshipId) => 
+{
+    const internship = await Internship.findOne({ _id: internshipId });
+
+    if (!internship) throw new Error("Internship not found");
+
+    return internship.position;
+}
 module.exports = 
 {
     register,
@@ -204,5 +212,6 @@ module.exports =
     byCity,
     byPosition,
     getById,
-    getIdByPositionName
+    getIdByPositionName,
+    getPositionById
 }
