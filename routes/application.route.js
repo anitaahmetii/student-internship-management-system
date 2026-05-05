@@ -213,16 +213,23 @@ route.get('/status/:status', verifyToken, authorizeRole('admin', 'hr'), validate
  *         description: Internal server error
  */
 
-route.get('/acceptedStudents', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAcceptedStudents);
+route.get('/acceptedStudents/:internshipId', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAcceptedStudentsByInternship);
 /**
  * @swagger
- * /api/application/acceptedStudents:
+ * /api/application/acceptedStudents/{internshipId}:
  *   get:
- *     summary: Get accepted students
- *     description: Returns a list of students whose internship applications have been accepted. Accessible by admin and HR.
+ *     summary: Get accepted students by internship ID
+ *     description: Returns a list of students whose internship applications have been accepted for a specific internship.
  *     tags: [InternshipApplication]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: internshipId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the internship
  *     responses:
  *       200:
  *         description: Successfully retrieved accepted students

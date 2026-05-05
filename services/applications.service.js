@@ -176,35 +176,28 @@ const searchByStatus = async (hrId, status) =>
         throw new Error(`Database error while retrieving internship applications based on status: ${err.message}`)
     }
 }
-const getStudents = async (hrId) => 
+const acceptedStudents = async (hrId, internshipId) => 
 {
     try
     {
-        const applications = await InternshipApplication.find({ reviewedBy: hrId, status: 'accepted' })
-                                                        .select('-_id -feedback -reviewedBy -reviewedAt -isVisible -updatedAt -createdAt -__v')
-                                                        .populate({ path: 'internship', select: 'position -_id'})
-                                                        .populate({ path: 'student', select: 'email -_id'})
+        const internshipPosition = await internshipService.getPositionById(internshipId);
+
+        const applications = await InternshipApplication.find({ reviewedBy: hrId, status: 'accepted', internship: internshipId })
+                                                        .populate({ path: 'student', select: 'email _id'})
                                                         .lean();
-        if (applications.length === 0) throw new Error(`No accepted applications found!`);
-        return applications;
+        if (applications.length === 0) throw new Error(`No accepted students found!`);
+
+        return {
+                    internship: internshipPosition,
+                    students: applications.map(s => ({
+                        _id: s.student._id,
+                        email: s.student.email
+                    }))
+                };
     }
     catch(err)
     {
-        throw new Error(`Database error while retrieving accepted internship applications for the student: ${err.message}`)
-    }
-}
-const getStudentsForEnrollments = async (hrUserId, internshipId) => 
-{
-    try
-    {
-        const applications = await InternshipApplication.find({ reviewedBy: hrUserId, status: 'accepted', internship: internshipId });
-                                                       
-        if (applications.length === 0) throw new Error(`No accepted applications found!`);
-        return applications;
-    }
-    catch(err)
-    {
-        throw new Error(`Database error while retrieving accepted internship applications for the student to enrollment: ${err.message}`)
+        throw new Error(`Failed to fetch accepted students: ${err.message}`)
     }
 }
 module.exports = 
@@ -216,6 +209,5 @@ module.exports =
     myApplicationsAsStudent,
     myApplicationsAsHr,
     searchByStatus,
-    getStudents,
-    getStudentsForEnrollments
+    acceptedStudents
 }

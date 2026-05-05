@@ -100,16 +100,17 @@ const getApplicationsByStatus = async (req, res) =>
         console.log(err.message);
     }
 }
-const getAcceptedStudents = async (req, res) =>
+const getAcceptedStudentsByInternship = async (req, res) =>
 {
     try
     {
-        const applications = await applicationService.getStudents(req.user._id);
-        res.status(200).json(applications);
+        const { internshipId } = req.params;
+        const result  = await applicationService.acceptedStudents(req.user._id, internshipId);
+        res.status(200).json(result );
     }
     catch(err)
     {
-        res.status(409).json(err.message);
+        res.status(500).json(err.message);
         console.log(err.message);
     }
 }
@@ -122,5 +123,5 @@ module.exports =
     getStudentApplications,
     getHrApplications,
     getApplicationsByStatus,
-    getAcceptedStudents
+    getAcceptedStudentsByInternship
 }
