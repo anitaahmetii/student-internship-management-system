@@ -368,20 +368,19 @@ const validateToSearchByStatus =
 ];
 const validateToEnrollment = 
 [
-   body('position')
-        .exists().withMessage('Position must be provided!')
+    body('mentorEmail')
+        .exists().withMessage('Mentor email must be provided!')
         .bail()
-        .isString().withMessage('Position must be a string!')
+        .isEmail().withMessage('Mentor email must be a valid email!')
         .bail()
         .trim()
-        .notEmpty().withMessage('Position cannot be empty!'),
-    body('mentor')
-        .exists().withMessage('Mentor email must be provided!')    
-        .bail()                    
-        .isString().withMessage('Mentor email must be a string!') 
+        .notEmpty().withMessage('Mentor email cannot be empty!'),
+    body('studentEmails')
+        .exists().withMessage('Student emails must be provided!')
         .bail()
-        .trim()                               
-        .notEmpty().withMessage('Mentor email cannot be empty!'), 
+        .isArray({ min: 1 }).withMessage('Student emails must be a non-empty array!'),
+    body('studentEmails.*')
+        .isEmail().withMessage('Each student email must be valid!'),
     extractError
 ];
 

@@ -4,16 +4,23 @@ const validator = require('../middleware/validators');
 const enrollmentController = require('../controllers/enrollment.controller');
 const { verifyToken, authorizeRole } = require('../middleware/auth');
 
-route.post('/enrollment', verifyToken, authorizeRole('admin', 'hr'), validator.validateToEnrollment, enrollmentController.registerEnrollment);
+route.post('/:internshipId', verifyToken, authorizeRole('admin', 'hr'), validator.validateToEnrollment, enrollmentController.registerEnrollment);
 /**
  * @swagger
- * /api/enrollment:
+ * /api/enrollment/{internshipId}:
  *   post:
  *     summary: Register internship enrollments
- *     description: Creates enrollments for accepted students and assigns a mentor. Only admin and HR can perform this action.
+ *     description: Creates enrollments for accepted students of a specific internship and assigns a mentor.
  *     tags: [Internship Enrollment]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: internshipId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the internship
  *     requestBody:
  *       required: true
  *       content:
@@ -21,51 +28,52 @@ route.post('/enrollment', verifyToken, authorizeRole('admin', 'hr'), validator.v
  *           schema:
  *             type: object
  *             required:
- *               - position
  *               - mentorEmail
+ *               - studentEmails
  *             properties:
- *               position:
- *                 type: string
- *                 example: Backend Developer Intern
  *               mentorEmail:
  *                 type: string
  *                 example: mentor@example.com
+ *               studentEmails:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["student1@gmail.com", "student2@gmail.com"]
  *     responses:
  *       201:
  *         description: Enrollment created successfully
  *       400:
- *         description: Validation error
+ *         description: Validation error (invalid input or missing fields)
  *       401:
  *         description: Unauthorized - token missing or invalid
  *       403:
  *         description: Forbidden - only admin or HR can access this endpoint
  *       404:
- *         description: Position or mentor not found / no accepted applications
+ *         description: Internship, mentor or students not found
  *       500:
  *         description: Internal server error
  */
 
-route.get('/:position', verifyToken, authorizeRole('mentor'), enrollmentController.getEnrollments);
+route.get('/:internshipId', verifyToken, authorizeRole('mentor'), enrollmentController.getMyStudentsAsMentor);
 /**
  * @swagger
- * /api/enrollment/{position}:
+ * /api/enrollment/{internshipId}:
  *   get:
- *     summary: Get enrollments by internship position
- *     description: Returns all students enrolled under a specific internship position for the logged-in mentor
+ *     summary: Get mentor's students by internship
+ *     description: Returns all students enrolled under a specific internship for the logged-in mentor
  *     tags: [Internship Enrollment]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: position
+ *         name: internshipId
  *         required: true
  *         schema:
  *           type: string
- *         description: Internship position/title used to filter enrollments
- *         example: Backend Developer Intern
+ *         description: Internship ID
  *     responses:
  *       200:
- *         description: Successfully retrieved enrollments
+ *         description: Successfully retrieved enrolled students
  *       401:
  *         description: Unauthorized - token missing or invalid
  *       403:

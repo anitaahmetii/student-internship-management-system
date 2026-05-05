@@ -4,34 +4,37 @@ const registerEnrollment = async (req, res) =>
 {
     try
     {
-        const { position, mentor } = req.body;
+        const { internshipId } = req.params;
+        const { mentorEmail, studentEmails } = req.body;
 
-        const register = await enrollmentService.register(req.user._id, position, mentor);
+        if (!Array.isArray(studentEmails)) return res.status(400).json({ success: false, message: "studentEmails must be an array" });
+        
+        const register = await enrollmentService.register(req.user._id, internshipId, mentorEmail, studentEmails);
         res.status(201).json(register);
     }
     catch(err)
     {
-        res.status(409).json(err.message);
-        console.log(err.message);
+        return res.status(500).json({ success: false, message: err.message });
     }
 }
-const getEnrollments = async (req, res) =>
+const getMyStudentsAsMentor = async (req, res) =>
 {
     try
     {
-        const { position } = req.params;
+        const { internshipId } = req.params;
 
-        const enrollments = await enrollmentService.getAll(req.user._id, position);
+        const enrollments = await enrollmentService.getMyStudents(req.user._id, internshipId);
+
         res.status(200).json(enrollments);
     }
     catch(err)
     {
-        res.status(409).json(err.message);
+        res.status(500).json(err.message);
         console.log(err.message);
     }
 }
 module.exports =
 {
     registerEnrollment,
-    getEnrollments
+    getMyStudentsAsMentor
 }

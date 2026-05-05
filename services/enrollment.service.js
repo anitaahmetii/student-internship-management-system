@@ -4,53 +4,66 @@ const applicationService = require('./applications.service');
 const userService = require('./user.service');
 const internshipService = require('./internship.service');
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-const register = async (hrId, position, mentorEmail) => 
+const register = async (hrId, internshipId, mentorEmail, studentEmails) => 
 {
     try
     {
 
-        const { exists: positionAvailable, id: positionId } = await internshipService.getIdByPositionName(position);
-        if (!positionAvailable) throw new Error("Position not found!");
+        const internshipData = await internshipService.getById(internshipId);
 
-        const reviewedApplications = await applicationService.getStudentsForEnrollments(hrId, positionId);
+        if (!internshipData.exists) throw new Error("Internship does not exist");
+        if (!internshipData.hr.equals(hrId)) throw new Error("You are not responsible for this internship!");
 
-        const { exists: mentorAvailable, userId: idMentor } = await userService.checkEmail(mentorEmail);
+        const { exists: mentorAvailable, userId: mentorId } = await userService.checkEmail(mentorEmail);
         if (!mentorAvailable) throw new Error("Mentor not found!"); 
 
-        const enrollmentData = reviewedApplications.map(e => ({
-                                                            internship: e.internship,
-                                                            student: e.student,
-                                                            mentor: idMentor
-                                                        }));
-        const enrollment = await InternshipEnrollment.insertMany(enrollmentData);
-        return enrollment;
+        const students = await User.find({ email: { $in: studentEmails }});
+        const foundEmails = students.map(s => s.email);
+        const notFound = studentEmails.filter(email => !foundEmails.includes(email));
+        if (students.length !== studentEmails.length) throw new Error(`These students were not found: ${notFound.join(", ")}`);
+
+        const enrollmentData = students.map(s => ({ internship: internshipId,
+                                                    student: s._id,
+                                                    mentor: mentorId
+                                            }));
+
+        return await InternshipEnrollment.insertMany(enrollmentData);
     }
     catch(err)
     {
         throw new Error(`Database error while enrollment: ${err.message}`);
     }
 }
-const getAll = async (mentorId, internshipName) =>
+const getMyStudents = async (mentorId, internshipId) =>
 {
     try
     {
-        const { exists: internshipAvailable, id: internshipId } = await internshipService.getIdByPositionName(internshipName);
-        if (!internshipAvailable) throw new Error("Internship not found"); 
+        const internshipAvailable = await internshipService.getById(internshipId);
+        if (!internshipAvailable.exists) throw new Error("Internship not found"); 
 
         const internshipEnrollments = await InternshipEnrollment.find({ mentor: mentorId, internship: internshipId })
                                                                 .select('-isVisible -createdAt -updatedAt -__v')
-                                                                .populate({ path: 'student', select: 'email -_id' })
+                                                                .populate({ path: 'student', select: 'email _id' })
                                                                 .lean();
-        return { internship: internshipName, mentor: mentorUserEmail, students: internshipEnrollments.map(s => s.student.email)};
+
+        if (internshipEnrollments.length === 0) throw new Error("You are not responsible for this internship!");
+
+        const internshipPosition = await internshipService.getPositionById(internshipId);
+                                                                   
+        return { internship: internshipPosition,
+                students: internshipEnrollments.map(s => s.student?.email).filter(Boolean)
+               };
     }
     catch(err)
     {
         throw new Error(`Database error while retrieving enrollments: ${err.message}`);
     }
 }
+
 module.exports = 
 {
     register,
-    getAll
+    getMyStudents
 }
