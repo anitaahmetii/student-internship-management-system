@@ -7,6 +7,8 @@ const InternshipEnrollmentSchema = new mongoose.Schema({
     isVisible: { type: Boolean, default: false } 
 }, { timestamps: true });
 
+InternshipEnrollmentSchema.index({ internship: 1, student: 1 }, { unique: true });
+
 const InternshipEnrollment = mongoose.model('InternshipEnrollment', InternshipEnrollmentSchema);
 
 module.exports = InternshipEnrollment;
