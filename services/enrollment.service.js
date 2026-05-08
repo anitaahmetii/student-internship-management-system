@@ -61,9 +61,13 @@ const getMyStudents = async (mentorId, internshipId) =>
         throw new Error(`Database error while retrieving enrollments: ${err.message}`);
     }
 }
-
+const isMentorAssigned = async (mentorId, internshipId) =>
+{
+    return !!await InternshipEnrollment.exists({ mentor: mentorId, internship: internshipId });
+}
 module.exports = 
 {
     register,
-    getMyStudents
+    getMyStudents,
+    isMentorAssigned
 }

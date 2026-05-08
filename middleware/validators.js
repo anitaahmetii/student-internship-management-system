@@ -383,6 +383,53 @@ const validateToEnrollment =
         .isEmail().withMessage('Each student email must be valid!'),
     extractError
 ];
+const validateToAddTask =
+[
+    param('internshipId')
+        .exists().withMessage('Internship id must be provided!')
+        .bail()
+        .isMongoId().withMessage('Internship id must be valid!'),
+
+    body('title')
+        .exists().withMessage('Title must be provided!')
+        .bail()
+        .isString().withMessage('Title must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Title cannot be empty!')
+        .isLength({ min: 3, max: 100 })
+        .withMessage('Title must be between 3 and 100 characters!'),
+
+    body('description')
+        .exists().withMessage('Description is required!')
+        .bail()
+        .isString().withMessage('Description must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Description cannot be empty!')
+        .isLength({ max: 1000 })
+        .withMessage('Description cannot exceed 1000 characters!'),
+
+    body('requirements')
+        .exists().withMessage('Requirements must be provided!')
+        .bail()
+        .isArray({ min: 1 })
+        .withMessage('Requirements must be a non-empty array!'),
+
+    body('requirements.*')
+        .isString().withMessage('Each requirement must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Requirement cannot be empty!'),
+
+    body('maxPoints')
+        .exists().withMessage('Max points must be provided!')
+        .bail()
+        .isInt({ min: 0 })
+        .withMessage('Max points must be a positive integer or zero!'),
+
+    extractError
+];
 
 module.exports = 
 { 
@@ -399,5 +446,6 @@ module.exports =
     validateToUpdateInternship,
     validateToUpdateApplication,
     validateToSearchByStatus,
-    validateToEnrollment
+    validateToEnrollment,
+    validateToAddTask
 };
