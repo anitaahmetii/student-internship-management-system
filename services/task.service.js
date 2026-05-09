@@ -42,9 +42,35 @@ const getTasks = async (mentorId, internshipId) =>
         throw new Error(`Failed to retrieve tasks: ${err.message}`);
     }
 }
-
+const taskExists = async (taskId) =>
+{
+   return !!await Task.exists({ _id: taskId });
+}
+const validateTaskOwnership = async (mentorId, taskId) =>
+{
+    return !!await Task.exists({ _id: taskId, createdBy: mentorId });
+}
+const getById = async (mentorId, taskId) =>
+{
+    return await Task.findOne({ _id: taskId, createdBy: mentorId });
+}
+const getInternshipByTask = async (taskId) =>
+{
+    const task = await Task.findById(taskId);
+    return task.internship;
+}
+const getTasksByMentor = async (mentorId) => 
+{
+    const tasks = await Task.find({ createdBy: mentorId }).select('_id').lean();
+    return tasks.map(t => t._id);
+}
 module.exports = 
 {
     add,
-    getTasks
+    getTasks,
+    taskExists,
+    validateTaskOwnership,
+    getById,
+    getInternshipByTask,
+    getTasksByMentor
 }

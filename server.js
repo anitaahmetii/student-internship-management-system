@@ -23,7 +23,7 @@ app.use('/api/city', cityRoute);
 app.use('/api/internship', internshipRoute);
 app.use('/api/application', applicationRoute);
 app.use('/api/enrollment', enrollmentRoute);
-// app.use('/api/progressTracker', progressTrackerRoute);
+app.use('/api/progressTracker', progressTrackerRoute);
 app.use('/api/task', taskRoute);
 
 const startRunning = async () => 

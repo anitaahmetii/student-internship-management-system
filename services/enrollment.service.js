@@ -65,9 +65,30 @@ const isMentorAssigned = async (mentorId, internshipId) =>
 {
     return !!await InternshipEnrollment.exists({ mentor: mentorId, internship: internshipId });
 }
+const getEnrollmentsByInternship = async (mentorId, internshipId) =>
+{
+    const enrollments = await InternshipEnrollment.find({ mentor: mentorId, internship: internshipId })
+                                                .select('_id')
+                                                .lean();
+    return enrollments.map(e => e._id);
+}
+const getEnrollmentsByStudentsAndInternship = async (mentorId, internshipId, studentEmails) =>
+{
+    const students = await User.find({ email: { $in: studentEmails }});
+    const foundEmails = students.map(s => s.email);
+    const notFound = studentEmails.filter(email => !foundEmails.includes(email));
+    if (students.length !== studentEmails.length) throw new Error(`These students were not found: ${notFound.join(", ")}`);
+
+    const enrollments = await InternshipEnrollment.find({ mentor: mentorId, internship: internshipId, student: { $in: students.map(s => s._id) }})
+                                                .select('_id')
+                                                .lean();
+    return enrollments.map(e => e._id);
+}
 module.exports = 
 {
     register,
     getMyStudents,
-    isMentorAssigned
+    isMentorAssigned,
+    getEnrollmentsByInternship,
+    getEnrollmentsByStudentsAndInternship
 }
