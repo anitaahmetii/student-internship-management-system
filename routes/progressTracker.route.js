@@ -190,10 +190,10 @@ route.get('/', verifyToken, authorizeRole('admin', 'mentor'), progressTrackerCon
  *         description: Database error while retrieving progress trackers
  */
 
-route.get('/:taskId', verifyToken, authorizeRole('admin', 'mentor'), progressTrackerController.getAllProgressTrackers);
+route.get('/task/:taskId', verifyToken, authorizeRole('admin', 'mentor'), progressTrackerController.getProgressTrackerByTask);
 /**
  * @swagger
- * /api/progressTracker/{taskId}:
+ * /api/progressTracker/task/{taskId}:
  *   get:
  *     summary: Retrieve progress trackers by task
  *     description: Returns all progress tracker records for a specific task created by the authenticated mentor
@@ -280,4 +280,68 @@ route.get('/:taskId', verifyToken, authorizeRole('admin', 'mentor'), progressTra
  *         description: Database error while retrieving progress trackers
  */
 
+route.get('/studentsTasks', verifyToken, authorizeRole('admin', 'student'), progressTrackerController.getMyTasksAsStudent);
+ /**
+ * @swagger
+ * /api/progressTracker/studentsTasks:
+ *   get:
+ *     summary: Get logged-in student tasks
+ *     description: Returns all tasks assigned to the authenticated student with progress tracking details.
+ *     tags: [Progress Tracker]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Student tasks retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   position:
+ *                     type: string
+ *                     example: Backend Developer Intern
+ *                   title:
+ *                     type: string
+ *                     example: Build REST API
+ *                   description:
+ *                     type: string
+ *                     example: Create a REST API using Node.js and Express
+ *                   requirements:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Node.js basics
+ *                       - Express knowledge
+ *                   maxPoints:
+ *                     type: number
+ *                     example: 100
+ *                   feedback:
+ *                     type: string
+ *                     nullable: true
+ *                     example: Good work overall
+ *                   pointsEarned:
+ *                     type: number
+ *                     example: 85
+ *                   assignedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   completedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   status:
+ *                     type: string
+ *                     enum: [pending, done]
+ *                     example: pending
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
+ *       403:
+ *         description: Forbidden (role not allowed)
+ *       500:
+ *         description: Server error while retrieving student tasks
+ */
 module.exports = route;

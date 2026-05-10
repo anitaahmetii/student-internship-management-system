@@ -1,4 +1,5 @@
 require('dotenv').config();
+const InternshipEnrollment = require('../models/InternshipEnrollment');
 const ProgressTracker = require('../models/ProgressTracker');
 const enrollmentService = require('./enrollment.service');
 const taskService = require('./task.service');
@@ -91,10 +92,42 @@ const getAll = async (mentorId) =>
         throw new Error(`Database error occurred while retrieving tasks: ${err.message}`);
     }
 }
+const getMyTasks = async (studentId) =>
+{
+    try
+    {
+        const studentEnrollmentId = await enrollmentService.studentEnrollment(studentId);
+        if (!studentEnrollmentId) return { message: "Student is not enrolled yet."};
+
+        const studentTasks = await ProgressTracker.find({ enrollment: { $in: studentEnrollmentId }})
+                                                .select('-_id -isVisible -createdAt -updatedAt -__v -enrollment')
+                                                .populate({ path: 'task', 
+                                                            select: 'title description requirements maxPoints', 
+                                                            populate: { path: 'internship', select: 'position'}})
+                                                .lean();
+        return studentTasks.map((sT) => ({ position: sT.task.internship.position,
+                                            title: sT.task.title,
+                                            description: sT.task.description,
+                                            requirements: sT.task.requirements,
+                                            maxPoints: sT.task.maxPoints,
+                                            feedback: sT.feedback,
+                                            pointsEarned: sT.pointsEarned,
+                                            assignedAt: sT.assignedAt,
+                                            completedAt: sT.completedAt,
+                                            status: sT.status
+                                }));
+    }
+    catch(err)
+    {
+        throw new Error(`Database error occurred while retrieving your tasks: ${err.message}`);
+    }
+}
+
 module.exports = 
 { 
     assignToAll,
     uniqueAssign,
     getByTask,
-    getAll
+    getAll,
+    getMyTasks
 }

@@ -84,11 +84,17 @@ const getEnrollmentsByStudentsAndInternship = async (mentorId, internshipId, stu
                                                 .lean();
     return enrollments.map(e => e._id);
 }
+const studentEnrollment = async (studentId) =>
+{
+    const enrollmentIds = await InternshipEnrollment.find({ student: studentId }).select("_id").lean();
+    return enrollmentIds.map(e => e._id);
+}
 module.exports = 
 {
     register,
     getMyStudents,
     isMentorAssigned,
     getEnrollmentsByInternship,
-    getEnrollmentsByStudentsAndInternship
+    getEnrollmentsByStudentsAndInternship,
+    studentEnrollment
 }
