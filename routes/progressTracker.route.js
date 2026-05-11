@@ -344,4 +344,84 @@ route.get('/studentsTasks', verifyToken, authorizeRole('admin', 'student'), prog
  *       500:
  *         description: Server error while retrieving student tasks
  */
+
+route.put('/trackProgress/:taskId/:studentEmail', verifyToken, authorizeRole('admin', 'mentor'), progressTrackerController.trackProgressForTask);
+/**
+ * @swagger
+ * /api/progressTracker/trackProgress/{taskId}/{studentEmail}:
+ *   put:
+ *     summary: Track and update student task progress
+ *     description: Allows an admin or mentor to update the progress details of a student's assigned task.
+ *     tags: [Progress Tracker]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the task
+ *         example: 65f1c2a9b2d4c8a123456789
+ *       - in: path
+ *         name: studentEmail
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *         description: Email of the student
+ *         example: student@gmail.com
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               feedback:
+ *                 type: string
+ *                 example: Excellent work and clean implementation
+ *               pointsEarned:
+ *                 type: number
+ *                 example: 95
+ *               completedAt:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2026-05-11T12:00:00.000Z
+ *               status:
+ *                 type: string
+ *                 enum: [pending, done]
+ *                 example: done
+ *               isVisible:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Student task progress updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 feedback:
+ *                   type: string
+ *                 pointsEarned:
+ *                   type: number
+ *                 completedAt:
+ *                   type: string
+ *                   format: date-time
+ *                 status:
+ *                   type: string
+ *                 isVisible:
+ *                   type: boolean
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (admin or mentor only)
+ *       404:
+ *         description: Task or student assignment not found
+ *       500:
+ *         description: Database error while tracking progress
+ */
+
 module.exports = route;

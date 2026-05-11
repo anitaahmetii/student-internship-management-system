@@ -68,11 +68,26 @@ const getMyTasksAsStudent = async (req, res) =>
         res.status(409).json(err.message);
     }
 }
+const trackProgressForTask = async (req, res) =>
+{
+    try
+    {
+        const { taskId, studentEmail } = req.params;
+        const { feedback, pointsEarned, completedAt, status, isVisible } = req.body;
+        const tracking = await progressTrackerService.trackProgress(req.user._id, taskId, studentEmail, feedback, pointsEarned, completedAt, status, isVisible);
+        res.status(200).json(tracking);
+    }
+    catch (err)
+    {
+        res.status(500).json({ error: err.message });
+    }
+}
 module.exports = 
 {
     assignTaskToStudents,
     assignUniqueTaskToStudents,
     getProgressTrackerByTask,
     getAllProgressTrackers,
-    getMyTasksAsStudent
+    getMyTasksAsStudent,
+    trackProgressForTask
 }

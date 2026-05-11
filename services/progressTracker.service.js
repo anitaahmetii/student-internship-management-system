@@ -3,6 +3,7 @@ const InternshipEnrollment = require('../models/InternshipEnrollment');
 const ProgressTracker = require('../models/ProgressTracker');
 const enrollmentService = require('./enrollment.service');
 const taskService = require('./task.service');
+const userService = require('./user.service');
 
 const assignToAll = async (mentorId, taskId) => 
 {
@@ -122,12 +123,37 @@ const getMyTasks = async (studentId) =>
         throw new Error(`Database error occurred while retrieving your tasks: ${err.message}`);
     }
 }
+const trackProgress = async (mentorId, taskId, studentEmail, feedback, pointsEarned, completedAt, status, isVisible) =>
+{
+    try
+    {
+        const taskExists = await taskService.taskExists(taskId)
+        if (!taskExists) throw new Error("Task not found!");
 
+        const isOwner = await taskService.validateTaskOwnership(mentorId, taskId);
+        if (!isOwner) throw new Error("Task not available");
+
+        const studentId = await userService.checkEmail(studentEmail);
+        const studentEnrollmentId = await enrollmentService.studentEnrollment(studentId.userId);
+        if (studentEnrollmentId.length === 0) return { message: "No task assignment found for this student"};
+
+        const progress = await ProgressTracker.findOneAndUpdate({ enrollment: { $in: studentEnrollmentId }, task: taskId }, 
+                                                                { feedback, pointsEarned, completedAt, status, isVisible },
+                                                                { new: true, runValidators: true });
+        return progress;
+
+    }
+     catch(err)
+    {
+        throw new Error(`Database error occurred while tracking the progress: ${err.message}`);
+    }
+}
 module.exports = 
 { 
     assignToAll,
     uniqueAssign,
     getByTask,
     getAll,
-    getMyTasks
+    getMyTasks,
+    trackProgress
 }
