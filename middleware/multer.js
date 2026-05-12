@@ -12,14 +12,10 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
   }
 });
+
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === "application/pdf" && path.extname(file.originalname) === '.pdf') cb(null, true);
-    else 
-    {
-        const error = new Error("Only PDF files are allowed!");
-        error.code = "INVALID_FILE_TYPE";
-        cb(error, false);
-    }
+    else cb(new Error("ONLY PDF FILES ARE ALLOWED"));
 };
 
 const upload = multer({ storage, fileFilter });

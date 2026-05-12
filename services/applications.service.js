@@ -23,14 +23,7 @@ const register = async (studentId, internshipId, file) =>
     }
     catch(err)
     {
-        if (err.name === 'TokenExpiredError') 
-        {
-            throw new Error("Please, login!");
-        } 
-        else 
-        {
-            throw new Error(`Database error while processing internship application: ${err.message}`);
-        }
+        throw new Error(`Database error while processing internship application: ${err.message}`);
     }
 }
 const getAppliedInternship = async (appliedInternshipId) =>

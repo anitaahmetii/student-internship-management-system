@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const route = express.Router();
 const applicationController = require('../controllers/application.controller');
 const validate = require('../middleware/validators');

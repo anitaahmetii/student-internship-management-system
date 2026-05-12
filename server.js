@@ -28,6 +28,18 @@ app.use('/api/enrollment', enrollmentRoute);
 app.use('/api/progressTracker', progressTrackerRoute);
 app.use('/api/task', taskRoute);
 
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: err.message });
+    }
+
+    if (err.message === "ONLY PDF FILES ARE ALLOWED") {
+        return res.status(400).json({ message: err.message });
+    }
+
+    return res.status(500).json({ message: "Internal server error" });
+});
+
 const startRunning = async () => 
 {
     await connectDB();

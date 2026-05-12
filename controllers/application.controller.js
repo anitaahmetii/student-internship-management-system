@@ -13,19 +13,8 @@ const uploadApplication = async (req, res) =>
     }
     catch(err)
     {
-        if (err.code === "INVALID_FILE_TYPE") return res.status(400).json(err.message);
-
-        if (req.file)
-        {
-            fs.unlink(req.file.path, (unlinkErr) =>
-            {
-                if (unlinkErr)
-                {
-                    console.log("Failed to delete file:", unlinkErr);
-                }
-            });
-        }
-        res.status(409).json(err.message);
+        if (req.file) fs.unlink(req.file.path, () => {});
+        return res.status(500).json(err.message);
     }
 }
 const getAllApplications = async (req, res) =>
@@ -38,7 +27,6 @@ const getAllApplications = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const updateApplication = async (req, res) =>
@@ -54,7 +42,6 @@ const updateApplication = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const deleteApplication = async (req, res) =>
@@ -69,7 +56,6 @@ const deleteApplication = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const getStudentApplications = async (req, res) =>
@@ -82,7 +68,6 @@ const getStudentApplications = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const getHrApplications = async (req, res) =>
@@ -95,7 +80,6 @@ const getHrApplications = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const getApplicationsByStatus = async (req, res) =>
@@ -110,7 +94,6 @@ const getApplicationsByStatus = async (req, res) =>
     catch(err)
     {
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const getAcceptedStudentsByInternship = async (req, res) =>
@@ -124,7 +107,6 @@ const getAcceptedStudentsByInternship = async (req, res) =>
     catch(err)
     {
         res.status(500).json(err.message);
-        console.log(err.message);
     }
 }
 module.exports = 
