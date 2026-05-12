@@ -1,18 +1,31 @@
 const applicationService = require('../services/applications.service');
+const fs = require('node:fs');
 
 const uploadApplication = async (req, res) =>
 {
     try
     {
         const { internship } = req.params;
-
-        const applicationInternship = await applicationService.register(req.user._id, internship);
+        const file = req.file;
+        if (!file) return res.status(400).json("CV is required!");
+        const applicationInternship = await applicationService.register(req.user._id, internship, file);
         res.status(201).json(applicationInternship);
     }
     catch(err)
     {
+        if (err.code === "INVALID_FILE_TYPE") return res.status(400).json(err.message);
+
+        if (req.file)
+        {
+            fs.unlink(req.file.path, (unlinkErr) =>
+            {
+                if (unlinkErr)
+                {
+                    console.log("Failed to delete file:", unlinkErr);
+                }
+            });
+        }
         res.status(409).json(err.message);
-        console.log(err.message);
     }
 }
 const getAllApplications = async (req, res) =>

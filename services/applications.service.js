@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const internshipService = require('./internship.service');
 const Internship = require('../models/Internship');
 
-const register = async (studentId, internshipId) =>
+const register = async (studentId, internshipId, file) =>
 {
     try
     {
@@ -14,7 +14,8 @@ const register = async (studentId, internshipId) =>
         const exists = await hasStudentApplied(studentId, internshipId);
         if (exists) throw new Error("You already applied for this internship!");
 
-        const internshipApplication = new InternshipApplication({ student: studentId, internship: internshipId });
+        const internshipApplication = new InternshipApplication({ student: studentId, internship: internshipId, 
+                                                                  cv: { fileUrl: `/uploads/${file.filename}`, fileName: file.originalname }});
         const savedInternship = await internshipApplication.save();
 
         const appliedInternship = await getAppliedInternship(savedInternship._id);

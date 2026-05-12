@@ -1,38 +1,51 @@
 const express = require('express');
+const multer = require('multer');
 const route = express.Router();
 const applicationController = require('../controllers/application.controller');
 const validate = require('../middleware/validators');
 const { verifyToken, authorizeRole } = require('../middleware/auth');
+const upload = require('../middleware/multer');
 
-route.post('/register/:internship', verifyToken, authorizeRole('student'), applicationController.uploadApplication);
+route.post('/register/:internship', verifyToken, authorizeRole('student'), upload.single('cv'), applicationController.uploadApplication);
 /**
  * @swagger
  * /api/application/register/{internship}:
  *   post:
  *     summary: Apply for an internship
- *     description: Allows a student to apply for a specific internship
+ *     description: Allows a student to apply for a specific internship and upload CV
  *     tags: [InternshipApplication]
  *     security:
  *       - bearerAuth: []
+ *
  *     parameters:
  *       - in: path
  *         name: internship
  *         required: true
  *         schema:
  *           type: string
- *         description: Internship ID the student is applying to
+ *         description: Internship ID
  *         example: 6812ab34cd56ef7890gh1234
+ *
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cv:
+ *                 type: string
+ *                 format: binary
+ *
  *     responses:
  *       201:
  *         description: Application submitted successfully
  *       400:
- *         description: Bad request - invalid internship or already applied
+ *         description: Bad request
  *       401:
- *         description: Unauthorized - token missing or invalid
+ *         description: Unauthorized
  *       403:
- *         description: Forbidden - only students can apply
- *       404:
- *         description: Internship not found
+ *         description: Forbidden
  *       500:
  *         description: Internal server error
  */

@@ -1,5 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/dbConnection');
+const multer = require('multer');
 const app = express();
 const roleRoute = require('./routes/role.route');
 const userRoute = require('./routes/user.route');
@@ -15,6 +16,7 @@ const swaggerOptions = require('./config/swagger');
 
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
+app.use('/uploads', express.static('public/uploads'));
 
 app.use('/api/role', roleRoute);
 app.use('/api/user', userRoute);
