@@ -9,6 +9,7 @@ const uploadApplication = async (req, res) =>
         const file = req.file;
         if (!file) return res.status(400).json("CV is required!");
         const applicationInternship = await applicationService.register(req.user._id, internship, file);
+
         res.status(201).json(applicationInternship);
     }
     catch(err)
@@ -109,6 +110,23 @@ const getAcceptedStudentsByInternship = async (req, res) =>
         res.status(500).json(err.message);
     }
 }
+const updateMyCvAsStudent = async (req, res) =>
+{
+    try
+    {
+        const file = req.file;
+        if (!file) return res.status(400).json("CV is required!");
+        const { internshipId } = req.params;
+
+        const update  = await applicationService.updateMyCV(req.user._id,  internshipId, file);
+        res.status(200).json(update);
+    }
+    catch (err)
+    {
+        if (req.file) fs.unlink(req.file.path, () => {});
+        res.status(500).json(err.message);
+    }
+}
 module.exports = 
 {
     uploadApplication,
@@ -118,5 +136,6 @@ module.exports =
     getStudentApplications,
     getHrApplications,
     getApplicationsByStatus,
-    getAcceptedStudentsByInternship
+    getAcceptedStudentsByInternship,
+    updateMyCvAsStudent
 }

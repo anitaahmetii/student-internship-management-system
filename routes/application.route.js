@@ -253,4 +253,49 @@ route.get('/acceptedStudents/:internshipId', verifyToken, authorizeRole('admin',
  *         description: Internal server error
  */
 
+route.put('/cv/update/:internshipId', verifyToken, authorizeRole('student'), upload.single('cv'), applicationController.updateMyCvAsStudent);
+ /**
+ * @swagger
+ * /api/application/cv/update/{internshipId}:
+ *   put:
+ *     summary: Update student's CV for an internship application
+ *     description: Allows a student to update their CV for a specific internship application
+ *     tags: [InternshipApplication]
+ *     security:
+ *       - bearerAuth: []
+ *
+ *     parameters:
+ *       - in: path
+ *         name: internshipId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Internship ID
+ *         example: 6812ab34cd56ef7890gh1234
+ *
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cv:
+ *                 type: string
+ *                 format: binary
+ *
+ *     responses:
+ *       200:
+ *         description: CV updated successfully
+ *       400:
+ *         description: Bad request (missing or invalid file)
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
+
+
 module.exports = route;

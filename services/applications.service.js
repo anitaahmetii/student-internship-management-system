@@ -3,6 +3,8 @@ const InternshipApplication = require('../models/InternshipApplication');
 const jwt = require('jsonwebtoken');
 const internshipService = require('./internship.service');
 const Internship = require('../models/Internship');
+const fs = require('fs');
+const path = require('path');
 
 const register = async (studentId, internshipId, file) =>
 {
@@ -194,6 +196,32 @@ const acceptedStudents = async (hrId, internshipId) =>
         throw new Error(`Failed to fetch accepted students: ${err.message}`)
     }
 }
+const updateMyCV = async (studentId, internshipId, file) =>
+{
+    try
+    {
+        const { exists: internshipAvailable } = await internshipService.getById(internshipId);
+        if (!internshipAvailable) throw new Error("Internship not found!");
+
+        const oldApplication = await InternshipApplication.findOne({ student: studentId, internship: internshipId });
+        if (!oldApplication) throw new Error("Application not found!");
+
+        const updatedCV = await InternshipApplication.findOneAndUpdate({ student: studentId, internship: internshipId }, 
+                                                                        { cv: { fileUrl: `/uploads/${file.filename}`, fileName: file.originalname }}, 
+                                                                        { new: true, runValidators: true});
+        
+        if (oldApplication.cv.fileUrl) 
+        {
+            const oldPath = path.join(__dirname, '../public', oldApplication.cv.fileUrl);
+            fs.unlink(oldPath, () => {});
+        }
+        return updatedCV;
+    }
+    catch(err)
+    {
+        throw new Error(`Failed to update CV: ${err.message}`)
+    }
+}
 module.exports = 
 {
     register,
@@ -203,5 +231,6 @@ module.exports =
     myApplicationsAsStudent,
     myApplicationsAsHr,
     searchByStatus,
-    acceptedStudents
+    acceptedStudents,
+    updateMyCV
 }
