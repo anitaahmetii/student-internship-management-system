@@ -11,12 +11,15 @@ const register = async (studentId, internshipId, file) =>
 {
     try
     {
-        const { exists: internshipAvailable } = await internshipService.getById(internshipId);
-        if (!internshipAvailable) throw new Error("Internship not found!");
+        const internshipAvailable = await internshipService.getById(internshipId);
+        if (!internshipAvailable.exists) throw new Error("Internship not found!");
+
+        const now = new Date();
+        if (now > internshipAvailable.deadline) throw new Error("Application deadline has passed!");
 
         const exists = await hasStudentApplied(studentId, internshipId);
         if (exists) throw new Error("You already applied for this internship!");
-
+       
         const internshipApplication = new InternshipApplication({ student: studentId, internship: internshipId, 
                                                                   cv: { fileUrl: `/uploads/${file.filename}`, fileName: file.originalname }});
         const savedInternship = await internshipApplication.save();
@@ -33,10 +36,13 @@ const updateMyCV = async (studentId, internshipId, file) =>
 {
     try
     {
-        const { exists: internshipAvailable } = await internshipService.getById(internshipId);
-        if (!internshipAvailable) throw new Error("Internship not found!");
+        const internshipAvailable = await internshipService.getById(internshipId);
+        if (!internshipAvailable.exists) throw new Error("Internship not found!");
 
-        const oldApplication = await InternshipApplication.findOne({ student: studentId, internship: internshipId });
+        const now = new Date();
+        if (now > internshipAvailable.deadline) throw new Error("Application deadline has passed!");
+
+        const oldApplication = await InternshipApplication.findOne({ student: studentId, internship: internshipId }).select('cv');;
         if (!oldApplication) throw new Error("Application not found!");
 
         const updatedCV = await InternshipApplication.findOneAndUpdate({ student: studentId, internship: internshipId }, 
