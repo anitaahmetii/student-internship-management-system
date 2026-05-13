@@ -69,8 +69,8 @@ To address these issues, this project aims to provide a centralized internship m
     - REFRESH_TOKEN_SECRET=YOUR_REFRESH_TOKEN_SECRET
     - DATABASE=YOUR_DATABASE_CONNECTION_STRING_OR_URL_IF_IT_IS_MONGO_ATLAS
 5. Run the development server
-  #### npm run dev
-6. Run in production mode
+   #### npm run dev
+7. Run in product mode
    #### npm start
    
 ## API Documentation (Swagger)
