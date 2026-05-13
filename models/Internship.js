@@ -7,7 +7,6 @@ const InternshipSchema = new mongoose.Schema({
     responsibilities: { type: [String], required: true }, 
     applicationDeadline: { type: Date, required: true }, 
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true }, 
-    deadline: { type: Date, required: true},
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, 
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, 
     isVisible: { type: Boolean, default: false } 

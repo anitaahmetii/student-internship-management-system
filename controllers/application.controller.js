@@ -54,7 +54,7 @@ const getStudentCVAsHR = async (req, res) =>
     {
         const { internshipId, studentEmail} = req.params;
         const cv = await applicationService.getStudentCV(req.user._id, internshipId, studentEmail);
-        res.redirect(cv);
+        res.status(200).json({ cvUrl: cv });
     }
     catch (err)
     {

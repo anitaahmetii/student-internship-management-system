@@ -8,7 +8,7 @@ const upload = require('../middleware/multer');
 route.post('/apply/:internship', verifyToken, authorizeRole('student'), upload.single('cv'), applicationController.applyForInternship);
 /**
  * @swagger
- * /api/application/register/{internship}:
+ * /api/application/apply/{internship}:
  *   post:
  *     summary: Apply for an internship
  *     description: Allows a student to apply for a specific internship and upload CV

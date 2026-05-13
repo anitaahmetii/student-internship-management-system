@@ -41,7 +41,7 @@ const updateMyCV = async (studentId, internshipId, file) =>
 
         const now = new Date();
         if (now > internshipAvailable.deadline) throw new Error("Application deadline has passed!");
-
+        
         const oldApplication = await InternshipApplication.findOne({ student: studentId, internship: internshipId }).select('cv');;
         if (!oldApplication) throw new Error("Application not found!");
 
@@ -106,7 +106,7 @@ const getStudentCV = async (hrId, internshipId, studentEmail) =>
         if (!application) throw new Error("Application not found!");
         if (!application?.cv?.fileUrl) throw new Error("CV not found!");
 
-        return `http://localhost:3000${application.cv.fileUrl}`;
+        return `http://localhost:3000${application.cv.fileUrl}`; 
     }
     catch (err)
     {
