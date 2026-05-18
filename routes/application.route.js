@@ -92,10 +92,10 @@ route.put('/cv/update/:internshipId', verifyToken, authorizeRole('student'), upl
  *         description: Internal server error
  */
 
-route.get('/applicants/:internshipId', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAllApplicantsAsHR);
+route.get('/applicantsById/:internshipId', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAllApplicantsByIdAsHR);
 /**
  * @swagger
- * /api/application/applicants/{internshipId}:
+ * /api/application/applicantsById/{internshipId}:
  *   get:
  *     summary: Get all applicants for an internship
  *     description: Returns all students who applied for a specific internship (admin and HR only). HR can only view applicants for their own posted internships.
@@ -504,5 +504,6 @@ route.delete('/delete/:application', verifyToken, authorizeRole('admin', 'hr'), 
  *       500:
  *         description: Internal server error
  */
+route.get('/applicants', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAllApplicantsAsHr);
 
 module.exports = route;
