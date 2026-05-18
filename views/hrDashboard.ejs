@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            padding: 30px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #2563eb;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .cv-btn {
+            text-decoration: none;
+            background: #16a34a;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .notification-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .notification {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: gray;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .top-bar {
+            margin-bottom: 25px;
+        }
+
+        .top-bar h1 {
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        .top-bar p {
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <h1>HR Recruitment Dashboard</h1>
+    <p>Manage internship applicants and monitor notifications.</p>
+</div>
+
+<div class="dashboard">
+
+    <!-- APPLICANTS TABLE -->
+    <div class="card">
+
+        <h2>Applicants</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Student Email</th>
+                    <th>Internship</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>CV</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>john.doe@gmail.com</td>
+                    <td>Backend Developer Internship</td>
+                    <td>Prishtina</td>
+                    <td>
+                        <span class="status">New Applicant</span>
+                    </td>
+                    <td>
+                        <a href="#" class="cv-btn">
+                            Open CV
+                        </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>sarah.smith@gmail.com</td>
+                    <td>Frontend Internship</td>
+                    <td>Prizren</td>
+                    <td>
+                        <span class="status">Reviewed</span>
+                    </td>
+                    <td>
+                        <a href="#" class="cv-btn">
+                            Open CV
+                        </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>mike.dev@gmail.com</td>
+                    <td>UI/UX Internship</td>
+                    <td>Peja</td>
+                    <td>
+                        <span class="status">Pending</span>
+                    </td>
+                    <td>
+                        <a href="#" class="cv-btn">
+                            Open CV
+                        </a>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="card">
+
+        <h2>Notifications</h2>
+
+        <div class="notification-container">
+
+            <div class="notification">
+                <div class="notification-title">
+                    John Doe applied for Backend Developer Internship
+                </div>
+
+                <div class="notification-time">
+                    Just now
+                </div>
+            </div>
+
+            <div class="notification">
+                <div class="notification-title">
+                    Sarah Smith updated CV for Frontend Internship
+                </div>
+
+                <div class="notification-time">
+                    5 minutes ago
+                </div>
+            </div>
+
+            <div class="notification">
+                <div class="notification-title">
+                    Mike Dev submitted a new application
+                </div>
+
+                <div class="notification-time">
+                    10 minutes ago
+                </div>
+            </div>
+
+            <div class="notification">
+                <div class="notification-title">
+                    New internship application received
+                </div>
+
+                <div class="notification-time">
+                    20 minutes ago
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

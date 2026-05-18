@@ -2,6 +2,7 @@ const express = require('express');
 const connectDB = require('./config/dbConnection');
 const multer = require('multer');
 const app = express();
+const cookieParser = require('cookie-parser');
 const roleRoute = require('./routes/role.route');
 const userRoute = require('./routes/user.route');
 const stateRoute = require('./routes/state.route');
@@ -13,10 +14,18 @@ const progressTrackerRoute = require('./routes/progressTracker.route');
 const taskRoute = require('./routes/task.route');
 const swaggerUi = require('swagger-ui-express');
 const swaggerOptions = require('./config/swagger');
+const path = require('node:path');
+const hrRoute = require('./routes/hr.route');
+const studentRoute = require('./routes/student.route');
 
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 app.use('/uploads', express.static('public/uploads'));
+app.use(express.urlencoded({ extended: true }));
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 app.use('/api/role', roleRoute);
 app.use('/api/user', userRoute);
@@ -27,6 +36,8 @@ app.use('/api/application', applicationRoute);
 app.use('/api/enrollment', enrollmentRoute);
 app.use('/api/progressTracker', progressTrackerRoute);
 app.use('/api/task', taskRoute);
+app.use('/hr', hrRoute); 
+app.use('/student', studentRoute); 
 
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {

@@ -1,4 +1,5 @@
 const userService = require('../services/user.service');
+const { authResponder } = require('../middleware/authResponder');
 
 const registerUser = async (req, res) => 
 {
@@ -21,7 +22,7 @@ const loginUser = async (req, res) =>
         const { email, password } = req.body;
         const tokens = await userService.login(email, password);
 
-        return res.status(200).json({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
+        return authResponder(req, res, tokens); 
     }
     catch(err)
     {
