@@ -6,6 +6,7 @@ const Internship = require('../models/Internship');
 const fs = require('fs');
 const path = require('path');
 const userService = require('./user.service');
+const { application } = require('express');
 
 const register = async (studentId, internshipId, file) =>
 {
@@ -104,7 +105,6 @@ const getAllApplicants = async (hrId) =>
                                                                     { path: 'uploadedBy', select: 'email -_id' },
                                                                     { path: 'updatedBy', select: 'email -_id' }]})
                                                         .lean();
-        if (applications.length === 0) throw new Error("No applicants found for this internship!");
 
         const formatted = applications.map(({ student, cv, ...rest }) => ({ student,
                                                                             cvUrl: cv?.fileUrl ? `http://localhost:3000${cv.fileUrl}` : null,

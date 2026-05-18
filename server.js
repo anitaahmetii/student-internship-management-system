@@ -18,8 +18,8 @@ const path = require('node:path');
 const hrRoute = require('./routes/hr.route');
 const studentRoute = require('./routes/student.route');
 
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 app.use('/uploads', express.static('public/uploads'));
 app.use(express.urlencoded({ extended: true }));

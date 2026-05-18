@@ -504,6 +504,5 @@ route.delete('/delete/:application', verifyToken, authorizeRole('admin', 'hr'), 
  *       500:
  *         description: Internal server error
  */
-route.get('/applicants', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAllApplicantsAsHr);
 
 module.exports = route;

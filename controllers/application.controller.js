@@ -52,7 +52,13 @@ const getAllApplicantsAsHr = async (req, res) =>
 {
     try
     {
-        const applicants = await applicationService.getAllApplicantsById(req.user._id, internshipId);
+        const applicants = await applicationService.getAllApplicants(req.user._id);
+        
+        const isHtml = req.headers.accept?.includes('text/html');
+        if (isHtml)
+        {
+            return res.render('hrDashboard', { applicants });
+        }
         res.status(200).json(applicants);
     }
     catch (err)

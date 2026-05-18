@@ -95,8 +95,22 @@
             padding: 6px 10px;
             border-radius: 20px;
             font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.accepted {
             background: #dcfce7;
             color: #166534;
+        }
+
+        .status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status.pending {
+            background: #fef9c3;
+            color: #854d0e;
         }
 
         .top-bar {
@@ -122,7 +136,6 @@
 
 <div class="dashboard">
 
-    <!-- APPLICANTS TABLE -->
     <div class="card">
 
         <h2>Applicants</h2>
@@ -140,49 +153,30 @@
             </thead>
 
             <tbody>
-
+                <% if (applicants.length === 0) { %>
                 <tr>
-                    <td>john.doe@gmail.com</td>
-                    <td>Backend Developer Internship</td>
-                    <td>Prishtina</td>
-                    <td>
-                        <span class="status">New Applicant</span>
-                    </td>
-                    <td>
-                        <a href="#" class="cv-btn">
-                            Open CV
-                        </a>
+                    <td colspan="5" style="text-align: center; color: gray; padding: 40px;">
+                        No applicants found.
                     </td>
                 </tr>
-
+                <% } else { %>
+                <% applicants.forEach(a => { %>
                 <tr>
-                    <td>sarah.smith@gmail.com</td>
-                    <td>Frontend Internship</td>
-                    <td>Prizren</td>
-                    <td>
-                        <span class="status">Reviewed</span>
-                    </td>
-                    <td>
-                        <a href="#" class="cv-btn">
-                            Open CV
-                        </a>
-                    </td>
-                </tr>
 
-                <tr>
-                    <td>mike.dev@gmail.com</td>
-                    <td>UI/UX Internship</td>
-                    <td>Peja</td>
+                    <td><%= a.student.email %></td>
+                    <td><%= a.internship.position %></td>
+                    <td><%= a.internship.location.name %></td>
                     <td>
-                        <span class="status">Pending</span>
+                        <span class="status <%= a.status %>">
+                            <%= a.status.charAt(0).toUpperCase() + a.status.slice(1) %>
+                        </span>
                     </td>
-                    <td>
-                        <a href="#" class="cv-btn">
-                            Open CV
-                        </a>
-                    </td>
+                    <td><a href="<%= a.cvUrl %>" class="cv-btn">
+                        Open CV
+                    </a></td>
                 </tr>
-
+                <% }) %>
+                <% } %>
             </tbody>
 
         </table>
