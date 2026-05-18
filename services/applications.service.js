@@ -61,7 +61,7 @@ const updateMyCV = async (studentId, internshipId, file) =>
         throw new Error(`Failed to update CV: ${err.message}`)
     }
 }
-const getAllApplicants = async (hrId, internshipId) => 
+const getAllApplicantsById = async (hrId, internshipId) => 
 {
     try
     {
@@ -70,6 +70,32 @@ const getAllApplicants = async (hrId, internshipId) =>
         if (!internshipData.hr.equals(hrId)) throw new Error ("Internship not available!");
 
         const applications = await InternshipApplication.find({ internship: internshipId })
+                                                        .select('-isVisible -createdAt -updatedAt -__v')
+                                                        .populate({ path: 'student', select: 'email -_id'})
+                                                        .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
+                                                                    populate: 
+                                                                    [{ path: 'location', select: 'name -_id' },
+                                                                    { path: 'uploadedBy', select: 'email -_id' },
+                                                                    { path: 'updatedBy', select: 'email -_id' }]})
+                                                        .lean();
+        if (applications.length === 0) throw new Error("No applicants found for this internship!");
+
+        const formatted = applications.map(({ student, cv, ...rest }) => ({ student,
+                                                                            cvUrl: cv?.fileUrl ? `http://localhost:3000${cv.fileUrl}` : null,
+                                                                            ...rest }));
+        return formatted;
+    }
+    catch (err)
+    {
+        throw new Error(`Failed to retrieve applicants by internship: ${err.message}`)
+    }
+}
+const getAllApplicants = async (hrId) =>
+{
+    try
+    {
+        const internshipIds = await internshipService.getInternshipIdsUploadedByHr(hrId);
+        const applications = await InternshipApplication.find({ internship: { $in: internshipIds }})
                                                         .select('-isVisible -createdAt -updatedAt -__v')
                                                         .populate({ path: 'student', select: 'email -_id'})
                                                         .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
@@ -275,6 +301,7 @@ module.exports =
     searchByStatus,
     acceptedStudents,
     updateMyCV,
+    getAllApplicantsById,
     getAllApplicants,
     getStudentCV
 }
