@@ -200,6 +200,11 @@ const getPositionById = async (internshipId) =>
 
     return internship.position;
 }
+const getInternshipIdsUploadedByHr = async (hrId) => 
+{ 
+    const internships = await Internship.find({ uploadedBy: hrId }).lean();
+    return internships.map(i => i._id);
+}
 module.exports = 
 {
     register,
@@ -213,5 +218,6 @@ module.exports =
     byPosition,
     getById,
     getIdByPositionName,
-    getPositionById
+    getPositionById,
+    getInternshipIdsUploadedByHr
 }
