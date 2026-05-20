@@ -26,11 +26,9 @@ const socketConnection = async (io) =>
     io.on('connection', (socket) => 
     { 
         if (socket.user.role === 'hr') socket.join('hr-room');
-        console.log(`Connected: ${socket.user._id} + ${socket.user.role}`);
-        socket.on('disconnect', () => 
-        { 
-            console.log(`Disconnected: ${socket.user._id}`); 
-        });
+        if (socket.user.role === 'student') socket.join('student-room');
+
+        socket.on('disconnect', () => {});
     });
 }
 

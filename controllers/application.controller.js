@@ -92,6 +92,7 @@ const updateApplication = async (req, res) =>
         const { status, feedback, isVisible } = req.body;
 
         const updated = await applicationService.toUpdate(req.user._id, applicationId, status, feedback, isVisible);
+        req.io.to('student-room').emit('application-update', updated);
         res.status(200).json(updated);
     }
     catch(err)
@@ -104,6 +105,12 @@ const getStudentApplications = async (req, res) =>
     try
     {
         const applications = await applicationService.myApplicationsAsStudent(req.user._id);
+        
+        const isHtml = req.headers.accept?.includes('text/html');
+        if (isHtml)
+        {
+            return res.render('studentDashboard', { applications });
+        }
         res.status(200).json(applications);
     }
     catch(err)

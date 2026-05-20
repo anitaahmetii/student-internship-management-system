@@ -149,9 +149,10 @@ const toUpdate = async (hrId, applicationId, status, feedback, isVisible) =>
 {
     try 
     {
+        console.log("ne service");
         const application = await InternshipApplication.findById(applicationId).select('internship');
         if (!application) throw new Error("Application not found!");
-
+        console.log("Application: " + application.internship);
         const internshipData = await internshipService.getById(application.internship);
         if (!internshipData.hr.equals(hrId)) throw new Error ("Application not available!");
 
@@ -176,13 +177,8 @@ const myApplicationsAsStudent = async (studentId) =>
         const applications = await InternshipApplication.find({ student: studentId })
                                                         .select('-isVisible -createdAt -updatedAt -__v')
                                                         .populate({ path: 'student', select: 'email -_id'})
-                                                        .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
-                                                                    populate: 
-                                                                    [
-                                                                        { path: 'location', select: 'name -_id' },
-                                                                        { path: 'uploadedBy', select: 'email -_id' },
-                                                                        { path: 'updatedBy', select: 'email -_id' }
-                                                                    ]})
+                                                        .populate({ path: 'internship', select: 'applicationDeadline position -_id', 
+                                                                    populate: [{ path: 'location', select: 'name -_id' }]})
                                                         .lean();
         if (applications.length === 0) throw new Error("You haven't applied to any internship yet!");
 
