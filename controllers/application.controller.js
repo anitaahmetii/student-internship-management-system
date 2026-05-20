@@ -6,10 +6,13 @@ const applyForInternship = async (req, res) =>
     try
     {
         const { internship } = req.params;
+
         const file = req.file;
         if (!file) return res.status(400).json("CV is required!");
-        const applicationInternship = await applicationService.register(req.user._id, internship, file);
 
+        const applicationInternship = await applicationService.register(req.user._id, internship, file);
+        
+        req.io.to('hr-room').emit('new-application', applicationInternship);
         res.status(201).json(applicationInternship);
     }
     catch(err)
@@ -26,8 +29,10 @@ const updateMyCvAsStudent = async (req, res) =>
         if (!file) return res.status(400).json("CV is required!");
         const { internshipId } = req.params;
 
-        const update  = await applicationService.updateMyCV(req.user._id,  internshipId, file);
-        res.status(200).json(update);
+
+        const updatedCV  = await applicationService.updateMyCV(req.user._id,  internshipId, file);
+        req.io.to('hr-room').emit('cv-updated', updatedCV);
+        res.status(200).json(updatedCV);
     }
     catch (err)
     {
@@ -35,7 +40,7 @@ const updateMyCvAsStudent = async (req, res) =>
         res.status(500).json(err.message);
     }
 }
-const getAllApplicantsByIdAsHR = async (req, res) =>
+const getAllApplicantsByIdByIdAsHR = async (req, res) =>
 {
     try
     {
@@ -53,6 +58,25 @@ const getAllApplicantsAsHr = async (req, res) =>
     try
     {
         const applicants = await applicationService.getAllApplicantsById(req.user._id, internshipId);
+        const applicants = await applicationService.getAllApplicantsById(req.user._id, internshipId);
+        res.status(200).json(applicants);
+    }
+    catch (err)
+    {
+        res.status(500).json(err.message);
+    }
+}
+const getAllApplicantsAsHr = async (req, res) =>
+{
+    try
+    {
+        const applicants = await applicationService.getAllApplicants(req.user._id);
+        
+        const isHtml = req.headers.accept?.includes('text/html');
+        if (isHtml)
+        {
+            return res.render('hrDashboard', { applicants });
+        }
         res.status(200).json(applicants);
     }
     catch (err)
@@ -81,6 +105,7 @@ const updateApplication = async (req, res) =>
         const { status, feedback, isVisible } = req.body;
 
         const updated = await applicationService.toUpdate(req.user._id, applicationId, status, feedback, isVisible);
+        req.io.to('student-room').emit('application-update', updated);
         res.status(200).json(updated);
     }
     catch(err)
@@ -93,6 +118,12 @@ const getStudentApplications = async (req, res) =>
     try
     {
         const applications = await applicationService.myApplicationsAsStudent(req.user._id);
+        
+        const isHtml = req.headers.accept?.includes('text/html');
+        if (isHtml)
+        {
+            return res.render('studentDashboard', { applications });
+        }
         res.status(200).json(applications);
     }
     catch(err)

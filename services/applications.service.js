@@ -6,6 +6,7 @@ const Internship = require('../models/Internship');
 const fs = require('fs');
 const path = require('path');
 const userService = require('./user.service');
+const { application } = require('express');
 
 const register = async (studentId, internshipId, file) =>
 {
@@ -47,8 +48,15 @@ const updateMyCV = async (studentId, internshipId, file) =>
 
         const updatedCV = await InternshipApplication.findOneAndUpdate({ student: studentId, internship: internshipId }, 
                                                                         { cv: { fileUrl: `/uploads/${file.filename}`, fileName: file.originalname }}, 
-                                                                        { new: true, runValidators: true});
-        
+                                                                        { new: true, runValidators: true})
+                                                                        .populate({ path: 'student', select: 'email -_id'})
+                                                                        .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
+                                                                                    populate: 
+                                                                                    [{ path: 'location', select: 'name -_id' },
+                                                                                    { path: 'uploadedBy', select: 'email -_id' },
+                                                                                    { path: 'updatedBy', select: 'email -_id' }]})
+                                                                        .lean();
+
         if (oldApplication.cv.fileUrl) 
         {
             const oldPath = path.join(__dirname, '../public', oldApplication.cv.fileUrl);
@@ -104,8 +112,6 @@ const getAllApplicants = async (hrId) =>
                                                                     { path: 'uploadedBy', select: 'email -_id' },
                                                                     { path: 'updatedBy', select: 'email -_id' }]})
                                                         .lean();
-        if (applications.length === 0) throw new Error("No applicants found for this internship!");
-
         const formatted = applications.map(({ student, cv, ...rest }) => ({ student,
                                                                             cvUrl: cv?.fileUrl ? `http://localhost:3000${cv.fileUrl}` : null,
                                                                             ...rest }));
@@ -143,9 +149,10 @@ const toUpdate = async (hrId, applicationId, status, feedback, isVisible) =>
 {
     try 
     {
+        console.log("ne service");
         const application = await InternshipApplication.findById(applicationId).select('internship');
         if (!application) throw new Error("Application not found!");
-
+        console.log("Application: " + application.internship);
         const internshipData = await internshipService.getById(application.internship);
         if (!internshipData.hr.equals(hrId)) throw new Error ("Application not available!");
 
@@ -170,13 +177,8 @@ const myApplicationsAsStudent = async (studentId) =>
         const applications = await InternshipApplication.find({ student: studentId })
                                                         .select('-isVisible -createdAt -updatedAt -__v')
                                                         .populate({ path: 'student', select: 'email -_id'})
-                                                        .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
-                                                                    populate: 
-                                                                    [
-                                                                        { path: 'location', select: 'name -_id' },
-                                                                        { path: 'uploadedBy', select: 'email -_id' },
-                                                                        { path: 'updatedBy', select: 'email -_id' }
-                                                                    ]})
+                                                        .populate({ path: 'internship', select: 'applicationDeadline position -_id', 
+                                                                    populate: [{ path: 'location', select: 'name -_id' }]})
                                                         .lean();
         if (applications.length === 0) throw new Error("You haven't applied to any internship yet!");
 

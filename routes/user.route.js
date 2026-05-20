@@ -268,4 +268,6 @@ route.post('/logout', verifyToken, userController.logoutUser);
  *       401:
  *         description: Unauthorized (invalid or missing token)
  */
+route.get('/login', (req, res) => { res.render('login'); });
+
 module.exports = route;
