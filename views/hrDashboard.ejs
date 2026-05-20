@@ -164,8 +164,7 @@
                 </tr>
                 <% } else { %>
                 <% applicants.forEach(a => { %>
-                <tr>
-
+                <tr data-id="<%= a._id %>">
                     <td><%= a.student.email %></td>
                     <td><%= a.internship.position %></td>
                     <td><%= a.internship.location.name %></td>
@@ -240,7 +239,6 @@
     const socket = io();
     socket.on('new-application', (application) => 
     {
-        console.log(application);
 
         const tbody = document.querySelector('tbody');
 
@@ -261,8 +259,22 @@
                 </a>
             </td>
         `;
-
         tbody.prepend(row);
+    });
+    socket.on('cv-updated', (application) => {
+
+        const rows = document.querySelectorAll('tr');
+
+        rows.forEach(row => {
+            if (row.dataset.id === application._id)
+            {
+                row.children[4].innerHTML = `
+                    <a href="http://localhost:3000${application.cv.fileUrl}" class="cv-btn">
+                        Open CV (Updated)
+                    </a>
+                `;
+            }
+        })
     });
 </script>
 </div>

@@ -26,8 +26,10 @@ const updateMyCvAsStudent = async (req, res) =>
         if (!file) return res.status(400).json("CV is required!");
         const { internshipId } = req.params;
 
-        const update  = await applicationService.updateMyCV(req.user._id,  internshipId, file);
-        res.status(200).json(update);
+
+        const updatedCV  = await applicationService.updateMyCV(req.user._id,  internshipId, file);
+        req.io.to('hr-room').emit('cv-updated', updatedCV);
+        res.status(200).json(updatedCV);
     }
     catch (err)
     {
