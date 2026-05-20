@@ -105,7 +105,6 @@ const getAllApplicants = async (hrId) =>
                                                                     { path: 'uploadedBy', select: 'email -_id' },
                                                                     { path: 'updatedBy', select: 'email -_id' }]})
                                                         .lean();
-
         const formatted = applications.map(({ student, cv, ...rest }) => ({ student,
                                                                             cvUrl: cv?.fileUrl ? `http://localhost:3000${cv.fileUrl}` : null,
                                                                             ...rest }));

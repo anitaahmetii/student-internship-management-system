@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>HR Dashboard</title>
 
     <style>
@@ -231,10 +234,37 @@
             </div>
 
         </div>
-
     </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('new-application', (application) => 
+    {
+        console.log(application);
 
+        const tbody = document.querySelector('tbody');
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${application.student.email}</td>
+            <td>${application.internship.position}</td>
+            <td>${application.internship.location.name}</td>
+            <td>
+                <span class="status ${application.status}">
+                    ${application.status}
+                </span>
+            </td>
+            <td>
+                <a href="http://localhost:3000${application.cv.fileUrl}" class="cv-btn">
+                    Open CV
+                </a>
+            </td>
+        `;
+
+        tbody.prepend(row);
+    });
+</script>
 </div>
-
 </body>
 </html>

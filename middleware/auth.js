@@ -8,14 +8,11 @@ const verifyToken = (req, res, next) =>
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1] || req.cookies?.accessToken; 
 
-        console.log('Cookies:', req.cookies);     
-        console.log('Auth Header:', req.headers.authorization);
 
         if (!token) return res.status(401).json({ error: 'You need to logg in' });
 
         const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         req.user = decodeToken;
-        console.log('Token found:', req.user.role); 
         next();
     }
     catch (err) 
