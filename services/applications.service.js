@@ -48,8 +48,15 @@ const updateMyCV = async (studentId, internshipId, file) =>
 
         const updatedCV = await InternshipApplication.findOneAndUpdate({ student: studentId, internship: internshipId }, 
                                                                         { cv: { fileUrl: `/uploads/${file.filename}`, fileName: file.originalname }}, 
-                                                                        { new: true, runValidators: true});
-        
+                                                                        { new: true, runValidators: true})
+                                                                        .populate({ path: 'student', select: 'email -_id'})
+                                                                        .populate({ path: 'internship', select: '-_id -isVisible -createdAt -updatedAt -__v', 
+                                                                                    populate: 
+                                                                                    [{ path: 'location', select: 'name -_id' },
+                                                                                    { path: 'uploadedBy', select: 'email -_id' },
+                                                                                    { path: 'updatedBy', select: 'email -_id' }]})
+                                                                        .lean();
+
         if (oldApplication.cv.fileUrl) 
         {
             const oldPath = path.join(__dirname, '../public', oldApplication.cv.fileUrl);

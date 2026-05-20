@@ -6,9 +6,12 @@ const applyForInternship = async (req, res) =>
     try
     {
         const { internship } = req.params;
+
         const file = req.file;
         if (!file) return res.status(400).json("CV is required!");
+
         const applicationInternship = await applicationService.register(req.user._id, internship, file);
+        
         req.io.to('hr-room').emit('new-application', applicationInternship);
         res.status(201).json(applicationInternship);
     }
