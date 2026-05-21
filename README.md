@@ -24,6 +24,7 @@ To address these issues, this project aims to provide a centralized internship m
 - Task Assignment & Management
 - Student Progress Tracking
 - Location Management (States & Cities)
+- Real-Time Dashboard and Notifications (Socket.IO)
 
 ## ER Diagram
 [ER Diagram](https://github.com/user-attachments/assets/2526f21d-f61c-48fe-a595-0a9f0bfa2a96)
@@ -54,6 +55,27 @@ To address these issues, this project aims to provide a centralized internship m
 - Nodemon
 ### Architecture Style
 - RESTful API
+
+## Real-Time Dashboard and Notifications (Socket.IO)
+
+This project implements real-time communication using Socket.IO to provide instant dashboard updates and live notifications without page refresh.
+
+### HR Dashboard Test
+1. Login as HR through `login.ejs`
+2. Login as STUDENT using the Swagger login endpoint
+3. Apply to an internship through the Swagger application endpoint
+4. Navigate to `hrDashboard.ejs`
+5. Without refreshing the page:
+   - the newly applied student appears instantly on the dashboard
+   - a live notification appears in the notification bar
+### Student Dashboard Test
+1. Login as STUDENT through `login.ejs`
+2. Login as HR using the Swagger login endpoint
+3. Accept or reject a student application through the Swagger endpoint
+4. Navigate to `studentDashboard.ejs`
+5. Without refreshing the page:
+   - the internship status updates instantly
+   - a live notification appears in the notification section
 
 ## Installation Guide
 1. Clone the repository
