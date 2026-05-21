@@ -42,7 +42,10 @@ To address these issues, this project aims to provide a centralized internship m
 ### Authentication & Security
 - JSON Web Token (JWT) 
 - bcrypt / bcryptjs 
-- Role-Based Access Control (RBAC) 
+- Role-Based Access Control (RBAC)
+### Real-Time Communication
+- Socket.IO
+- WebSockets
 ### Validation
 - express-validator 
 ### File Handling
@@ -76,6 +79,12 @@ This project implements real-time communication using Socket.IO to provide insta
 5. Without refreshing the page:
    - the internship status updates instantly
    - a live notification appears in the notification section
+
+### Live Demo Notes
+When testing the live demo, make sure to use the full deployed route URL.
+
+Example login route:
+https://student-internship-management-system-rkub.onrender.com/api/user/login
 
 ## Installation Guide
 1. Clone the repository
