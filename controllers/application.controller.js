@@ -40,24 +40,11 @@ const updateMyCvAsStudent = async (req, res) =>
         res.status(500).json(err.message);
     }
 }
-const getAllApplicantsByIdByIdAsHR = async (req, res) =>
+const getAllApplicantsByIdAsHR = async (req, res) =>
 {
     try
     {
         const { internshipId } = req.params;
-        const applicants = await applicationService.getAllApplicantsById(req.user._id, internshipId);
-        res.status(200).json(applicants);
-    }
-    catch (err)
-    {
-        res.status(500).json(err.message);
-    }
-}
-const getAllApplicantsAsHr = async (req, res) =>
-{
-    try
-    {
-        const applicants = await applicationService.getAllApplicantsById(req.user._id, internshipId);
         const applicants = await applicationService.getAllApplicantsById(req.user._id, internshipId);
         res.status(200).json(applicants);
     }
