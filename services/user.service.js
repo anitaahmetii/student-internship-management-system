@@ -250,5 +250,6 @@ module.exports =
     toDelete,
     toUpdate,
     checkEmail, 
-    logout
+    logout,
+    hashPassword
 };
