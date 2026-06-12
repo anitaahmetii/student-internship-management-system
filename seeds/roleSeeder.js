@@ -8,7 +8,7 @@ const seedRoles = async () => {
         for (const roleName of roles) 
         {
             const exists = await Role.findOne({ role: roleName });
-            if (!exists) { await Role.create({ role: roleName }); console.log(`Role: ${roleName} was created successfully!`); } 
+            if (!exists) { await Role.create({ role: roleName }); } 
         }
     } 
     catch (err) 

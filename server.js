@@ -12,7 +12,6 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*', credentials: true }});
 const socketConnection = require('./sockets/connection');
 
-const roleRoute = require('./routes/role.route');
 const userRoute = require('./routes/user.route');
 const stateRoute = require('./routes/state.route');
 const cityRoute = require('./routes/city.route');
@@ -36,7 +35,6 @@ app.set("views", path.join(__dirname, "views"));
 app.use((req, res, next) => { req.io = io; next(); });
 socketConnection(io);
 
-app.use('/api/role', roleRoute);
 app.use('/api/user', userRoute);
 app.use('/api/state', stateRoute);
 app.use('/api/city', cityRoute);

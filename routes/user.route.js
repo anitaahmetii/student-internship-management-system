@@ -4,14 +4,13 @@ const userController = require('../controllers/user.controller');
 const validator = require('../middleware/validators');
 const { verifyToken, authorizeRole } = require('../middleware/auth');
 
-
 route.post('/register', validator.validateToRegisterUser, userController.registerUser);
 /**
  * @swagger
  * /api/user/register:
  *   post:
  *     summary: Register new user
- *     description: Creates a new user account and assigns a role (except admin)
+ *     description: Creates a new user account. The role is assigned automatically by the system.
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -26,7 +25,6 @@ route.post('/register', validator.validateToRegisterUser, userController.registe
  *               - birthDate
  *               - city
  *               - password
- *               - role
  *             properties:
  *               name:
  *                 type: string
@@ -53,14 +51,133 @@ route.post('/register', validator.validateToRegisterUser, userController.registe
  *               isVisible:
  *                 type: boolean
  *                 example: true
- *               role:
- *                 type: string
- *                 example: student
  *     responses:
  *       200:
  *         description: User registered successfully
  *       400:
  *         description: Validation error
+ */
+route.post('/registerHr', verifyToken, authorizeRole('admin'), userController.registerUserAsHR);
+/**
+ * @swagger
+ * /api/user/registerHr:
+ *   post:
+ *     summary: Register new HR user
+ *     description: Creates a new HR account. The role is automatically assigned as "hr". Only admins can perform this action.
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - surname
+ *               - email
+ *               - birthDate
+ *               - city
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John
+ *               surname:
+ *                 type: string
+ *                 example: Smith
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: hr@company.com
+ *               birthDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 1995-05-15
+ *               phoneNumber:
+ *                 type: string
+ *                 example: "044123456"
+ *               city:
+ *                 type: string
+ *                 example: Pristina
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "123456"
+ *               isVisible:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       201:
+ *         description: HR user registered successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized - Missing or invalid token
+ *       403:
+ *         description: Forbidden - Only admins can register HR users
+ */
+route.post('/registerMentor', verifyToken, authorizeRole('admin'), userController.registerUserAsMentor);
+/**
+ * @swagger
+ * /api/user/registerMentor:
+ *   post:
+ *     summary: Register new mentor user
+ *     description: Creates a new mentor account. The role is automatically assigned as "mentor". Only admins can perform this action.
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - surname
+ *               - email
+ *               - birthDate
+ *               - city
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John
+ *               surname:
+ *                 type: string
+ *                 example: Smith
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: mentor@company.com
+ *               birthDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 1990-05-15
+ *               phoneNumber:
+ *                 type: string
+ *                 example: "044123456"
+ *               city:
+ *                 type: string
+ *                 example: Pristina
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "123456"
+ *               isVisible:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       201:
+ *         description: Mentor user registered successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized - Missing or invalid token
+ *       403:
+ *         description: Forbidden - Only admins can register mentor users
  */
 
 route.post('/login', validator.validateToLoginUser, userController.loginUser);

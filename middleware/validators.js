@@ -6,40 +6,6 @@ const extractError = (req, res, next) =>
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     next();
 }
-
-const validateRole = 
-[
-    body('role')
-        .exists().withMessage('Role must be provided!')
-        .bail()
-        .isString().withMessage('Role must be a string!')
-        .bail()
-        .trim()
-        .notEmpty().withMessage('Role cannot be empty!'),
-    body('permission')
-        .optional()                         
-        .isString().withMessage('Permission must be a string!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Permission cannot be empty if provided!'),
-    extractError
-];
-const validateToUpdateRole = 
-[
-    body('role')
-        .optional()                         
-        .isString().withMessage('Role must be a string!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Role cannot be empty if provided!'),
-    body('permission')
-        .optional()                         
-        .isString().withMessage('Permission must be a string!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Permission cannot be empty if provided!'),
-    extractError
-];
 const validateState = 
 [
     body('name')
@@ -162,13 +128,6 @@ const validateToRegisterUser =
         .optional()
         .isBoolean()
         .withMessage('Visibility must be boolean!'),
-    body('role')
-        .exists().withMessage('Role must be provided!')    
-        .bail()                    
-        .isString().withMessage('Role must be a string!') 
-        .bail()
-        .trim()                               
-        .notEmpty().withMessage('Role cannot be empty!'),
     extractError
 ];
 const validateToLoginUser =
@@ -451,8 +410,6 @@ const validateUniqueAssign =
 ];
 module.exports = 
 { 
-    validateRole, 
-    validateToUpdateRole,
     validateState, 
     validateToUpdateState, 
     validateCity,

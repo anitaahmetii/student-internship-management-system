@@ -18,9 +18,16 @@ const getAdminRole = async () =>
     if (!role) { throw new Error('Admin role not found'); }
     return role;
 }
+const getMentorRole = async () =>
+{
+    const role = await Role.findOne({ role: 'mentor' }).lean();
+    if (!role) { throw new Error('Mentor role not found'); }
+    return role;
+}
 module.exports = 
 { 
     getStudentRole, 
     getHrRole ,
-    getAdminRole
+    getAdminRole,
+    getMentorRole
 };

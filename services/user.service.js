@@ -5,25 +5,20 @@ const cityService = require('./city.service');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const register = async (name, surname, email, birthDate, phoneNumber, city, password, role) => 
+const register = async (name, surname, email, birthDate, phoneNumber, city, password) => 
 {
     try
     {
         const { exists: cityAvailable, cityId: idCity } = await cityService.findCity(city);
         if (!cityAvailable) throw new Error("City not available!");
 
-        const { exists: roleAvailable, id: roleId } = await roleService.roleExists(role);
-        if (!roleAvailable) throw new Error('Role not available!');
-        if (role.toLowerCase() === 'admin') 
-        {
-            throw new Error(`You do not have permission to assign the ${role} role.`);
-        }
-
         const { exists: emailExists} = await checkEmail(email);
         if (emailExists) throw new Error("Email already exists!");
 
         const phoneNumberExists = await checkPhoneNumber(phoneNumber);
         if (phoneNumberExists) throw new Error("Phone number already exists!");
+
+        const studentRole = await roleService.getStudentRole();
         
         const hashedPassword = await hashPassword(password);
         const user = new User({ name, 
@@ -33,12 +28,74 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
                                 phoneNumber, 
                                 city: idCity, 
                                 password: hashedPassword, 
-                                role: roleId });
+                                role: studentRole._id });
         return await user.save();
     }
     catch(err)
     {
-        throw new Error(`Database error while registering user: ${err.message}`);
+        throw new Error(`Database error while registering student: ${err.message}`);
+    }
+}
+const registerHR = async (name, surname, email, birthDate, phoneNumber, city, password) =>
+{
+    try
+    {
+        const { exists: emailExists} = await checkEmail(email);
+        if (emailExists) throw new Error("Email already exists!");
+
+        const phoneNumberExists = await checkPhoneNumber(phoneNumber);
+        if (phoneNumberExists) throw new Error("Phone number already exists!");
+
+        const { exists: cityAvailable, cityId: idCity } = await cityService.findCity(city);
+        if (!cityAvailable) throw new Error("City not available!");
+
+        const hrRole = await roleService.getHrRole();
+
+        const hashedPassword = await hashPassword(password);
+        const user = new User({ name, 
+                                surname, 
+                                email, 
+                                birthDate, 
+                                phoneNumber, 
+                                city: idCity, 
+                                password: hashedPassword, 
+                                role: hrRole._id });
+        return await user.save();
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while registering HR: ${err.message}`);
+    }
+}
+const registerMentor = async (name, surname, email, birthDate, phoneNumber, city, password) =>
+{
+    try
+    {
+        const { exists: emailExists} = await checkEmail(email);
+        if (emailExists) throw new Error("Email already exists!");
+
+        const phoneNumberExists = await checkPhoneNumber(phoneNumber);
+        if (phoneNumberExists) throw new Error("Phone number already exists!");
+
+        const { exists: cityAvailable, cityId: idCity } = await cityService.findCity(city);
+        if (!cityAvailable) throw new Error("City not available!");
+
+        const mentorRole = await roleService.getMentorRole();
+
+        const hashedPassword = await hashPassword(password);
+        const user = new User({ name, 
+                                surname, 
+                                email, 
+                                birthDate, 
+                                phoneNumber, 
+                                city: idCity, 
+                                password: hashedPassword, 
+                                role: mentorRole._id });
+        return await user.save();
+    }
+    catch(err)
+    {
+        throw new Error(`Database error while registering mentor: ${err.message}`);
     }
 }
 const generateTokens = async (user) => 
@@ -242,7 +299,9 @@ const toUpdate = async (emailParam, name, surname, email, birthDate, phoneNumber
 }
 module.exports = 
 { 
-    register, 
+    register,
+    registerHR,
+    registerMentor,
     login, 
     getAll, 
     refresh, 

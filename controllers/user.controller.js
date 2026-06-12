@@ -5,14 +5,40 @@ const registerUser = async (req, res) =>
 {
     try 
     {
-        const { name, surname, email, birthDate, phoneNumber, city, password, role } = req.body;
-        const addUser = await userService.register(name, surname, email, birthDate, phoneNumber, city, password, role); 
+        const { name, surname, email, birthDate, phoneNumber, city, password } = req.body;
+        const addUser = await userService.register(name, surname, email, birthDate, phoneNumber, city, password); 
         return res.status(201).json(addUser);
     }
     catch(err)
     {
         res.status(409).json(err.message);
         console.log(err.message);
+    }
+}
+const registerUserAsHR = async (req, res) => 
+{
+    try 
+    {
+        const { name, surname, email, birthDate, phoneNumber, city, password } = req.body;
+        const addUser = await userService.registerHR(name, surname, email, birthDate, phoneNumber, city, password); 
+        return res.status(201).json(addUser);
+    }
+    catch(err)
+    {
+        res.status(500).json(err.message);
+    }
+}
+const registerUserAsMentor = async (req, res) => 
+{
+    try 
+    {
+        const { name, surname, email, birthDate, phoneNumber, city, password } = req.body;
+        const addUser = await userService.registerMentor(name, surname, email, birthDate, phoneNumber, city, password); 
+        return res.status(201).json(addUser);
+    }
+    catch(err)
+    {
+        res.status(500).json(err.message);
     }
 }
 const loginUser = async (req, res) => 
@@ -113,7 +139,9 @@ const updateUser = async (req, res) =>
 }
 module.exports = 
 { 
-    registerUser, 
+    registerUser,
+    registerUserAsHR, 
+    registerUserAsMentor,
     loginUser, 
     getUsers, 
     refreshToken, 
