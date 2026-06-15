@@ -506,4 +506,6 @@ route.delete('/delete/:application', verifyToken, authorizeRole('admin', 'hr'), 
  */
 route.get('/applicants', verifyToken, authorizeRole('admin', 'hr'), applicationController.getAllApplicantsAsHr);
 
+route.post('/analyzeCV/:applicationId', verifyToken, authorizeRole('admin', 'hr'), applicationController.analyzeCVAsHR);
+
 module.exports = route;

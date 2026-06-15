@@ -293,6 +293,65 @@ const toDelete = async (applicationId, userId) =>
         throw new Error(`Database error while deleting internship application: ${err.message}`);
     }
 }
+const analyzeCV = async (hrId, applicationId) => 
+{
+    try
+    {
+        const application = await InternshipApplication.findById(applicationId)
+                            .populate({ path: 'internship', select: 'position preRequirements responsibilities' });
+        
+        if (!application) throw new Error("Application not found!");
+    
+        const internshipData = await internshipService.getById(application.internship._id);
+        if (!internshipData.hr.equals(hrId)) throw new Error("Not authorized!");
+
+        if (!application.cv?.fileUrl) throw new Error("CV not found!");
+
+        const filePath = path.join(__dirname, '../public', application.cv.fileUrl);
+        const fileBuffer = await fs.promises.readFile(filePath);
+        const pdfParse = require('pdf-parse');
+        const pdfData = await pdfParse(fileBuffer);
+        const cvText = pdfData.text;
+
+        const internship = application.internship;
+
+        const Groq = require('groq-sdk');
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+        const prompt = `You are an HR assistant. Analyze this CV for the internship position and respond ONLY with a valid JSON object, no extra text.
+
+                        Internship Position: ${internship.position}
+                        Requirements: ${internship.preRequirements.join(', ')}
+                        Responsibilities: ${internship.responsibilities.join(', ')}
+
+                        CV Content:
+                        ${cvText}
+
+                        Respond ONLY with this JSON format:
+                        {
+                        "score": <number 0-100>,
+                        "summary": "<2-3 sentences about the candidate>",
+                        "matchedSkills": ["skill1", "skill2"],
+                        "missingSkills": ["skill1", "skill2"]
+                        }`;
+
+        const groqResponse = await groq.chat.completions.create({
+            messages: [{ role: 'user', content: prompt }],
+            model: 'llama-3.3-70b-versatile',
+            temperature: 0.3
+        });
+
+        const raw = groqResponse.choices[0].message.content.trim();
+        const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+        const result = JSON.parse(cleaned);
+        return result;
+    }
+    catch(err)
+    {
+        throw new Error(`${err.message}`);
+    }
+}
+
 module.exports = 
 {
     register,
@@ -305,5 +364,6 @@ module.exports =
     updateMyCV,
     getAllApplicantsById,
     getAllApplicants,
-    getStudentCV
+    getStudentCV,
+    analyzeCV
 }

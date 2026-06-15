@@ -171,6 +171,19 @@ const deleteApplication = async (req, res) =>
         res.status(409).json(err.message);
     }
 }
+const analyzeCVAsHR = async (req, res) =>
+{
+    try
+    {
+        const { applicationId } = req.params;
+        const result = await applicationService.analyzeCV(req.user._id, applicationId);
+        res.status(200).json(result);
+    }
+    catch(err)
+    {
+        res.status(500).json(err.message);
+    }
+}
 module.exports = 
 {
     applyForInternship,
@@ -183,5 +196,6 @@ module.exports =
     updateMyCvAsStudent,
     getAllApplicantsByIdAsHR,
     getStudentCVAsHR,
-    getAllApplicantsAsHr
+    getAllApplicantsAsHr,
+    analyzeCVAsHR
 }

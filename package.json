@@ -30,10 +30,12 @@
     "ejs": "^5.0.2",
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
+    "groq-sdk": "^1.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5",
     "multer": "^2.1.1",
     "nodemon": "^3.1.11",
+    "pdf-parse": "^1.1.1",
     "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
