@@ -164,6 +164,30 @@
             font-size: 13px;
             line-height: 1.5;
         }
+        .accept-btn {
+            background: #16a34a;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        .reject-btn {
+            background: #dc2626;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        .accept-btn:disabled, .reject-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -189,6 +213,7 @@
                     <th>Status</th>
                     <th>CV</th>
                     <th>AI Analysis</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -215,6 +240,14 @@
                         <button class="ai-btn" onclick="analyzeCV('<%= a._id %>', this)">AI Analyze</button>
                     </td>
                     <td class="ai-result-cell" style="min-width: 250px; max-width: 350px;"></td>
+                    <td style="white-space: nowrap;">
+                        <% if (a.status === 'pending') { %>
+                        <button class="accept-btn" onclick="updateStatus('<%= a._id %>', 'accepted', this)">Accept</button>
+                        <button class="reject-btn" onclick="updateStatus('<%= a._id %>', 'rejected', this)">Reject</button>
+                        <% } else { %>
+                        <span style="color: #94a3b8; font-size: 13px;">Reviewed</span>
+                        <% } %>
+                    </td>
                 </tr>
                 <% }) %>
                 <% } %>
@@ -334,6 +367,41 @@
         }
 
         btn.disabled = false;
+    }
+    async function updateStatus(applicationId, status, btn) 
+    {
+        btn.disabled = true;
+
+        try 
+        {
+            const res = await fetch(`/api/application/update/${applicationId}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(JSON.stringify(data));
+
+            const row = btn.closest('tr');
+            const statusCell = row.children[3];
+            const actionCell = btn.closest('td');
+
+            statusCell.innerHTML = `
+                <span class="status ${status}">
+                    ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+            `;
+
+            actionCell.innerHTML = `<span style="color: #94a3b8; font-size: 13px;">Reviewed</span>`;
+
+        } 
+        catch (err) 
+        {
+            alert('Failed: ' + err.message);
+            btn.disabled = false;
+        }
     }
 </script>
 </div>
