@@ -18,94 +18,123 @@
         body {
             font-family: Arial, sans-serif;
             background: #f4f7fb;
-            padding: 30px;
+            padding: 36px;
+            color: #0f172a;
         }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: 3fr 1fr;
-            gap: 20px;
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .top-bar-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .top-bar-text p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .count-pill {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2563eb;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
         .card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-radius: 14px;
+            padding: 0;
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
         }
 
-        h2 {
-            margin-bottom: 20px;
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eef1f6;
+        }
+
+        .card-header h2 {
+            font-size: 17px;
+            font-weight: 700;
             color: #1e293b;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 920px;
         }
 
         th {
             background: #2563eb;
             color: white;
-            padding: 14px;
+            padding: 14px 16px;
             text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
         td {
-            padding: 14px;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 16px;
+            border-bottom: 1px solid #eef1f6;
+            font-size: 14px;
+            vertical-align: top;
         }
 
-        tr:hover {
+        tbody tr {
+            transition: background 0.12s ease;
+        }
+
+        tbody tr:hover {
             background: #f8fafc;
         }
 
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
         .cv-btn {
+            display: inline-block;
             text-decoration: none;
             background: #16a34a;
             color: white;
             padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .notification-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .notification {
-            background: #f8fafc;
-            border-left: 4px solid #2563eb;
-            padding: 12px 14px;
-            border-radius: 10px;
-        }
-
-        .notification-title {
-            font-size: 14px;
+            border-radius: 7px;
+            font-size: 13px;
             font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
+            transition: background 0.15s ease;
         }
 
-        .notification-time {
-            font-size: 12px;
-            color: #64748b;
+        .cv-btn:hover {
+            background: #15803d;
         }
 
-        .empty-state {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 14px;
-            padding: 20px;
-        }
         .status {
             display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 999px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .status.accepted {
@@ -123,86 +152,125 @@
             color: #854d0e;
         }
 
-        .top-bar {
-            margin-bottom: 25px;
-        }
-
-        .top-bar h1 {
-            color: #0f172a;
-            margin-bottom: 5px;
-        }
-
-        .top-bar p {
-            color: #64748b;
-        }
         .ai-btn {
             background: #7c3aed;
             color: white;
             padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
             border: none;
             cursor: pointer;
-            margin-left: 20px;
+            margin-top: 8px;
+            transition: background 0.15s ease;
         }
+
+        .ai-btn:hover:enabled {
+            background: #6d28d9;
+        }
+
         .ai-btn:disabled {
-            background: #a78bfa;
+            background: #c4b5fd;
             cursor: not-allowed;
         }
+
         .score-badge {
             display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
+            padding: 4px 11px;
+            border-radius: 999px;
             font-weight: 700;
             font-size: 12px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
+
         .score-high { background: #dcfce7; color: #166534; }
         .score-mid  { background: #fef9c3; color: #854d0e; }
         .score-low  { background: #fee2e2; color: #991b1b; }
+
         .ai-result {
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.55;
+            color: #334155;
         }
+
+        .ai-result p {
+            margin-top: 4px;
+        }
+
+        .ai-placeholder {
+            color: #94a3b8;
+            font-size: 12px;
+            font-style: italic;
+        }
+
         .accept-btn {
             background: #16a34a;
             color: white;
             padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
             border: none;
             cursor: pointer;
-            margin-left: 4px;
+            margin-right: 6px;
+            transition: background 0.15s ease;
         }
+
+        .accept-btn:hover:enabled {
+            background: #15803d;
+        }
+
         .reject-btn {
             background: #dc2626;
             color: white;
             padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
             border: none;
             cursor: pointer;
-            margin-left: 4px;
+            transition: background 0.15s ease;
         }
+
+        .reject-btn:hover:enabled {
+            background: #b91c1c;
+        }
+
         .accept-btn:disabled, .reject-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .reviewed-tag {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            padding: 60px 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="top-bar">
-    <h1>HR Recruitment Dashboard</h1>
-    <p>Manage internship applicants and monitor notifications.</p>
+    <div class="top-bar-text">
+        <h1>HR Recruitment Dashboard</h1>
+        <p>Manage internship applicants and monitor activity</p>
+    </div>
+    <span class="count-pill"><%= applicants.length %> applicant<%= applicants.length === 1 ? '' : 's' %></span>
 </div>
 
-<div class="dashboard">
-
-    <div class="card">
-
+<div class="card">
+    <div class="card-header">
         <h2>Applicants</h2>
+    </div>
 
+    <div class="table-scroll">
         <table>
 
             <thead>
@@ -220,7 +288,7 @@
             <tbody>
                 <% if (applicants.length === 0) { %>
                 <tr>
-                    <td colspan="5" style="text-align: center; color: gray; padding: 40px;">
+                    <td colspan="7" class="empty-state">
                         No applicants found.
                     </td>
                 </tr>
@@ -236,16 +304,18 @@
                         </span>
                     </td>
                     <td style="white-space: nowrap;">
-                        <a href="<%= a.cvUrl %>" class="cv-btn">Open CV</a>
+                        <a href="<%= a.cvUrl %>" class="cv-btn">Open CV</a><br>
                         <button class="ai-btn" onclick="analyzeCV('<%= a._id %>', this)">AI Analyze</button>
                     </td>
-                    <td class="ai-result-cell" style="min-width: 250px; max-width: 350px;"></td>
+                    <td class="ai-result-cell" style="min-width: 250px; max-width: 350px;">
+                        <span class="ai-placeholder">Not analyzed yet</span>
+                    </td>
                     <td style="white-space: nowrap;">
                         <% if (a.status === 'pending') { %>
                         <button class="accept-btn" onclick="updateStatus('<%= a._id %>', 'accepted', this)">Accept</button>
                         <button class="reject-btn" onclick="updateStatus('<%= a._id %>', 'rejected', this)">Reject</button>
                         <% } else { %>
-                        <span style="color: #94a3b8; font-size: 13px;">Reviewed</span>
+                        <span class="reviewed-tag">Reviewed</span>
                         <% } %>
                     </td>
                 </tr>
@@ -254,62 +324,54 @@
             </tbody>
         </table>
     </div>
-    <div class="card">
-        <h2>Notifications</h2>
-        <div class="notification-container">
-            <div class="empty-state">No activity</div>
-        </div>
-    </div>
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
-    
-    function addApplicationRow(application)
-    {
-        const tbody = document.querySelector('tbody');
 
-        const row = document.createElement('tr');
+    function addApplicationRow(application) {
+    const tbody = document.querySelector('tbody');
 
-        row.innerHTML = `
-            <td>${application.student.email}</td>
-            <td>${application.internship.position}</td>
-            <td>${application.internship.location.name}</td>
-            <td>
-                <span class="status ${application.status}">
-                    ${application.status}
-                </span>
-            </td>
-            <td>
-                <a href="http://localhost:3000${application.cv.fileUrl}" class="cv-btn">
-                    Open CV
-                </a>
-            </td>
-        `;
-        tbody.prepend(row);
+    const emptyRow = tbody.querySelector('td[colspan="7"]');
+    if (emptyRow) {
+        emptyRow.closest('tr').remove();
     }
-    function addNotification(message)
-    {
-        const container = document.querySelector('.notification-container');
 
-        const emptyState = document.querySelector('.empty-state');
-        if (emptyState) emptyState.remove();
+    const row = document.createElement('tr');
+    row.dataset.id = application._id;
 
-        const notification = document.createElement('div');
-        notification.classList.add('notification');
+    const statusCapitalized = application.status.charAt(0).toUpperCase() + application.status.slice(1);
 
-        const now = new Date();
-        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        notification.innerHTML = `
-            <div class="notification-title">
-                ${message}
-            </div>
-            <div class="notification-time">
-                ${time}
-            </div>
-        `;
-        container.prepend(notification);
-    }
-    function addUpdatedApplication(appplication)
+    const actionsHtml = application.status === 'pending'
+        ? `<button class="accept-btn" onclick="updateStatus('${application._id}', 'accepted', this)">Accept</button>
+           <button class="reject-btn" onclick="updateStatus('${application._id}', 'rejected', this)">Reject</button>`
+        : `<span class="reviewed-tag">Reviewed</span>`;
+
+    row.innerHTML = `
+        <td>${application.student.email}</td>
+        <td>${application.internship.position}</td>
+        <td>${application.internship.location.name}</td>
+        <td>
+            <span class="status ${application.status}">
+                ${statusCapitalized}
+            </span>
+        </td>
+        <td style="white-space: nowrap;">
+            <a href="http://localhost:3000${application.cv.fileUrl}" class="cv-btn">Open CV</a><br>
+            <button class="ai-btn" onclick="analyzeCV('${application._id}', this)">AI Analyze</button>
+        </td>
+        <td class="ai-result-cell" style="min-width: 250px; max-width: 350px;">
+            <span class="ai-placeholder">Not analyzed yet</span>
+        </td>
+        <td style="white-space: nowrap;">
+            ${actionsHtml}
+        </td>
+    `;
+
+    tbody.prepend(row);
+}
+    function addUpdatedApplication(application)
     {
         const rows = document.querySelectorAll('tr');
         rows.forEach(row => {
@@ -325,12 +387,10 @@
     socket.on('new-application', (application) => 
     {
         addApplicationRow(application);
-        addNotification(`${application.student.email} applied for ${application.internship.position}`);
     });
     socket.on('cv-updated', (application) => 
     {
         addUpdatedApplication(application);
-        addNotification(`${application.student.email} updated CV for ${application.internship.position}`);
     });
 
     async function analyzeCV(applicationId, btn) 
@@ -394,7 +454,7 @@
                 </span>
             `;
 
-            actionCell.innerHTML = `<span style="color: #94a3b8; font-size: 13px;">Reviewed</span>`;
+            actionCell.innerHTML = `<span class="reviewed-tag">Reviewed</span>`;
 
         } 
         catch (err) 
@@ -404,6 +464,5 @@
         }
     }
 </script>
-</div>
 </body>
 </html>

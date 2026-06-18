@@ -105,7 +105,7 @@ const generateTokens = async (user) =>
         _id: user._id,
         role: user.role.role
     }
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2d'});
   
     return { accessToken, refreshToken };
