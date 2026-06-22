@@ -6,8 +6,7 @@ const verifyToken = (req, res, next) =>
     try
     {
         const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1] || req.cookies?.accessToken; 
-
+        const token = authHeader && authHeader.split(' ')[1]; 
 
         if (!token) return res.status(401).json({ error: 'You need to logg in' });
 

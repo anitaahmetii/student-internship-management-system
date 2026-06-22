@@ -59,11 +59,6 @@ const getAllApplicantsAsHr = async (req, res) =>
     {
         const applicants = await applicationService.getAllApplicants(req.user._id);
         
-        const isHtml = req.headers.accept?.includes('text/html');
-        if (isHtml)
-        {
-            return res.render('hrDashboard', { applicants });
-        }
         res.status(200).json(applicants);
     }
     catch (err)
@@ -106,11 +101,6 @@ const getStudentApplications = async (req, res) =>
     {
         const applications = await applicationService.myApplicationsAsStudent(req.user._id);
         
-        const isHtml = req.headers.accept?.includes('text/html');
-        if (isHtml)
-        {
-            return res.render('studentDashboard', { applications });
-        }
         res.status(200).json(applications);
     }
     catch(err)
