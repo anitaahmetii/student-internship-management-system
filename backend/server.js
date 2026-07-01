@@ -20,7 +20,7 @@ const applicationRoute = require('./routes/application.route');
 const enrollmentRoute = require('./routes/enrollment.route');
 const progressTrackerRoute = require('./routes/progressTracker.route');
 const taskRoute = require('./routes/task.route');
-
+const companyRoute = require('./routes/company.route');
 
 app.use(cookieParser());
 app.use(express.json());
@@ -42,7 +42,7 @@ app.use('/api/application', applicationRoute);
 app.use('/api/enrollment', enrollmentRoute);
 app.use('/api/progressTracker', progressTrackerRoute);
 app.use('/api/task', taskRoute);
-
+app.use('/api/companies', companyRoute);
 
 
 app.use((err, req, res, next) => {

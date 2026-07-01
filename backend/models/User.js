@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
     password: { type: String, required: true, min: 6 },
     isVisible: { type: Boolean, default: false },
     role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
+    company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
     refreshToken: { type: String, default: null }
 }, { timestamps: true });
 

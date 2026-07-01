@@ -408,6 +408,200 @@ const validateUniqueAssign =
         .bail(),
     extractError
 ];
+const validateCreateCompany = 
+[
+    body('name')
+        .exists().withMessage('Company name must be provided!')
+        .bail()
+        .isString().withMessage('Company name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Company name cannot be empty!')
+        .isLength({ min: 2, max: 100 })
+        .withMessage('Company name must be between 2 and 100 characters!'),
+    body('email')
+        .exists().withMessage('Email must be provided!')
+        .bail()
+        .isEmail().withMessage('Email must be a valid email address!')
+        .bail()
+        .trim()
+        .normalizeEmail()
+        .notEmpty().withMessage('Email cannot be empty!'),
+    body('industry')
+        .exists().withMessage('Industry must be provided!')
+        .bail()
+        .isString().withMessage('Industry must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Industry cannot be empty!'),
+    body('description')
+        .optional()
+        .isString().withMessage('Description must be a string!')
+        .bail()
+        .trim()
+        .isLength({ max: 1000 })
+        .withMessage('Description cannot exceed 1000 characters!'),
+    body('phoneNumber')
+        .optional()
+        .isString().withMessage('Phone number must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Phone number cannot be empty if provided!'),
+    body('address')
+        .optional()
+        .isString().withMessage('Address must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Address cannot be empty if provided!'),
+    body('city')
+        .exists().withMessage('City must be provided!')
+        .bail()
+        .isString().withMessage('City must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('City cannot be empty!'),
+    body('website')
+        .optional()
+        .isURL().withMessage('Website must be a valid URL!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Website cannot be empty if provided!'),
+    body('logoUrl')
+        .optional()
+        .isURL().withMessage('Logo URL must be a valid URL!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Logo URL cannot be empty if provided!'),
+    body('isActive')
+        .optional()
+        .isBoolean().withMessage('Active status must be a boolean!'),
+    extractError
+];
+ 
+const validateUpdateCompany = 
+[
+    param('id')
+        .exists().withMessage('Company ID must be provided!')
+        .bail()
+        .isMongoId().withMessage('Company ID must be valid!'),
+    body('name')
+        .optional()
+        .isString().withMessage('Company name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Company name cannot be empty if provided!')
+        .isLength({ min: 2, max: 100 })
+        .withMessage('Company name must be between 2 and 100 characters!'),
+    body('email')
+        .optional()
+        .isEmail().withMessage('Email must be a valid email address!')
+        .bail()
+        .trim()
+        .normalizeEmail()
+        .notEmpty().withMessage('Email cannot be empty if provided!'),
+    body('industry')
+        .optional()
+        .isString().withMessage('Industry must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Industry cannot be empty if provided!'),
+    body('description')
+        .optional()
+        .isString().withMessage('Description must be a string!')
+        .bail()
+        .trim()
+        .isLength({ max: 1000 })
+        .withMessage('Description cannot exceed 1000 characters if provided!'),
+    body('phoneNumber')
+        .optional()
+        .isString().withMessage('Phone number must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Phone number cannot be empty if provided!'),
+    body('address')
+        .optional()
+        .isString().withMessage('Address must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Address cannot be empty if provided!'),
+    body('city')
+        .optional()
+        .isString().withMessage('City must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('City cannot be empty if provided!'),
+    body('website')
+        .optional()
+        .isURL().withMessage('Website must be a valid URL!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Website cannot be empty if provided!'),
+    body('logoUrl')
+        .optional()
+        .isURL().withMessage('Logo URL must be a valid URL!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Logo URL cannot be empty if provided!'),
+    body('isActive')
+        .optional()
+        .isBoolean().withMessage('Active status must be a boolean!'),
+    extractError
+];
+ 
+const validateGetCompanyById = 
+[
+    param('id')
+        .exists().withMessage('Company ID must be provided!')
+        .bail()
+        .isMongoId().withMessage('Company ID must be valid!'),
+    extractError
+];
+ 
+const validateDeleteCompany = 
+[
+    param('id')
+        .exists().withMessage('Company ID must be provided!')
+        .bail()
+        .isMongoId().withMessage('Company ID must be valid!'),
+    extractError
+];
+ 
+const validateGetByName = 
+[
+    param('name')
+        .exists().withMessage('Company name must be provided!')
+        .bail()
+        .isString().withMessage('Company name must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Company name cannot be empty!'),
+    extractError
+];
+ 
+const validateGetByIndustry = 
+[
+    param('industry')
+        .exists().withMessage('Industry must be provided!')
+        .bail()
+        .isString().withMessage('Industry must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('Industry cannot be empty!'),
+    extractError
+];
+ 
+const validateGetByCity = 
+[
+    param('city')
+        .exists().withMessage('City must be provided!')
+        .bail()
+        .isString().withMessage('City must be a string!')
+        .bail()
+        .trim()
+        .notEmpty().withMessage('City cannot be empty!'),
+    extractError
+];
+
 module.exports = 
 { 
     validateState, 
@@ -424,5 +618,12 @@ module.exports =
     validateToEnrollment,
     validateToAddTask,
     validateAssign,
-    validateUniqueAssign
+    validateUniqueAssign,
+    validateCreateCompany,
+    validateUpdateCompany,
+    validateGetCompanyById,
+    validateDeleteCompany,
+    validateGetByName,
+    validateGetByIndustry,
+    validateGetByCity
 };
