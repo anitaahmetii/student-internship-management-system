@@ -4,7 +4,7 @@ const registerUser = async (req, res) =>
 {
     try 
     {
-        const { name, surname, email, birthDate, phoneNumber, city, password } = req.body;
+        const { name, surname, email, birthDate, phoneNumber, city, password} = req.body;
         const addUser = await userService.register(name, surname, email, birthDate, phoneNumber, city, password); 
         return res.status(201).json(addUser);
     }
@@ -18,8 +18,8 @@ const registerUserAsHR = async (req, res) =>
 {
     try 
     {
-        const { name, surname, email, birthDate, phoneNumber, city, password } = req.body;
-        const addUser = await userService.registerHR(name, surname, email, birthDate, phoneNumber, city, password); 
+        const { name, surname, email, birthDate, phoneNumber, city, password, company } = req.body;
+        const addUser = await userService.registerHR(name, surname, email, birthDate, phoneNumber, city, password, company); 
         return res.status(201).json(addUser);
     }
     catch(err)
@@ -32,7 +32,7 @@ const registerUserAsMentor = async (req, res) =>
     try 
     {
         const { name, surname, email, birthDate, phoneNumber, city, password } = req.body;
-        const addUser = await userService.registerMentor(name, surname, email, birthDate, phoneNumber, city, password); 
+        const addUser = await userService.registerMentor(req.user._id, name, surname, email, birthDate, phoneNumber, city, password); 
         return res.status(201).json(addUser);
     }
     catch(err)

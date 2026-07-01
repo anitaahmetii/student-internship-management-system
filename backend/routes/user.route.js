@@ -63,7 +63,7 @@ route.post('/registerHr', verifyToken, authorizeRole('admin'), userController.re
  * /api/user/registerHr:
  *   post:
  *     summary: Register new HR user
- *     description: Creates a new HR account. The role is automatically assigned as "hr". Only admins can perform this action.
+ *     description: Creates a new HR account and links it to an existing company. The role is automatically assigned as "hr". Only admins can perform this action.
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
@@ -80,6 +80,7 @@ route.post('/registerHr', verifyToken, authorizeRole('admin'), userController.re
  *               - birthDate
  *               - city
  *               - password
+ *               - company
  *             properties:
  *               name:
  *                 type: string
@@ -105,6 +106,10 @@ route.post('/registerHr', verifyToken, authorizeRole('admin'), userController.re
  *                 type: string
  *                 format: password
  *                 example: "123456"
+ *               company:
+ *                 type: string
+ *                 description: ID of an existing company to link this HR user to
+ *                 example: "507f1f77bcf86cd799439011"
  *               isVisible:
  *                 type: boolean
  *                 example: true
@@ -117,7 +122,10 @@ route.post('/registerHr', verifyToken, authorizeRole('admin'), userController.re
  *         description: Unauthorized - Missing or invalid token
  *       403:
  *         description: Forbidden - Only admins can register HR users
+ *       409:
+ *         description: Conflict - Email/phone number already exists, city not available, or company not available
  */
+ 
 route.post('/registerMentor', verifyToken, authorizeRole('admin'), userController.registerUserAsMentor);
 /**
  * @swagger

@@ -229,6 +229,11 @@ const checkEmail = async (email) =>
     const exists = await Company.findOne({ email: email });
     return !!exists;
 }
+const checkCompany = async (companyId) => 
+{
+    const exists = await Company.findById(companyId);
+    return !!exists;
+}
 module.exports = 
 {
     create,
@@ -240,5 +245,6 @@ module.exports =
     getByIndustry,
     getByCity,
     getActive,
-    getByCreator
+    getByCreator,
+    checkCompany
 }

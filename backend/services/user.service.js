@@ -4,6 +4,7 @@ const roleService = require('./role.service');
 const cityService = require('./city.service');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const companyService = require('./company.service');
 
 const register = async (name, surname, email, birthDate, phoneNumber, city, password) => 
 {
@@ -36,7 +37,7 @@ const register = async (name, surname, email, birthDate, phoneNumber, city, pass
         throw new Error(`Database error while registering student: ${err.message}`);
     }
 }
-const registerHR = async (name, surname, email, birthDate, phoneNumber, city, password) =>
+const registerHR = async (name, surname, email, birthDate, phoneNumber, city, password, company) =>
 {
     try
     {
@@ -48,6 +49,9 @@ const registerHR = async (name, surname, email, birthDate, phoneNumber, city, pa
 
         const { exists: cityAvailable, cityId: idCity } = await cityService.findCity(city);
         if (!cityAvailable) throw new Error("City not available!");
+
+        const companyId = await companyService.checkCompany(company);
+        if (!companyId) throw new Error("Company not available!");
 
         const hrRole = await roleService.getHrRole();
 
@@ -59,7 +63,8 @@ const registerHR = async (name, surname, email, birthDate, phoneNumber, city, pa
                                 phoneNumber, 
                                 city: idCity, 
                                 password: hashedPassword, 
-                                role: hrRole._id });
+                                role: hrRole._id,
+                                company });
         return await user.save();
     }
     catch(err)
@@ -67,7 +72,7 @@ const registerHR = async (name, surname, email, birthDate, phoneNumber, city, pa
         throw new Error(`Database error while registering HR: ${err.message}`);
     }
 }
-const registerMentor = async (name, surname, email, birthDate, phoneNumber, city, password) =>
+const registerMentor = async (userId, name, surname, email, birthDate, phoneNumber, city, password) =>
 {
     try
     {
@@ -80,6 +85,8 @@ const registerMentor = async (name, surname, email, birthDate, phoneNumber, city
         const { exists: cityAvailable, cityId: idCity } = await cityService.findCity(city);
         if (!cityAvailable) throw new Error("City not available!");
 
+        const companyId = await getCurrentHRCompany(userId);
+
         const mentorRole = await roleService.getMentorRole();
 
         const hashedPassword = await hashPassword(password);
@@ -90,7 +97,8 @@ const registerMentor = async (name, surname, email, birthDate, phoneNumber, city
                                 phoneNumber, 
                                 city: idCity, 
                                 password: hashedPassword, 
-                                role: mentorRole._id });
+                                role: mentorRole._id,
+                                company: companyId });
         return await user.save();
     }
     catch(err)
@@ -296,6 +304,14 @@ const toUpdate = async (emailParam, name, surname, email, birthDate, phoneNumber
     {
         throw new Error(`Failed to update user: ${err.message}`);
     }  
+}
+const getCurrentHRCompany = async (userId) => 
+{
+    const user = await User.findById(userId).select('company').lean();
+
+    if (!user.company) throw new Error("This HR is not linked to any company!");
+
+    return user.company;
 }
 module.exports = 
 { 
